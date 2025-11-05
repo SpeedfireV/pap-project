@@ -15,6 +15,6 @@ Możliwe dodatkowe feature-y aplikacji (jeżeli czas pozwoli):
 ## Opis Technologiczny
 Planujemy użyć następującego tech-stacku:
 - Frontend - React, Bootstrap - z możliwością rozszerzenia o dodatkowe frameworki/biblioteki
-- Backend - .NET Web API
+- Backend - .NET Core
 - Hosting - Render
 - CI/CD - Github Actions

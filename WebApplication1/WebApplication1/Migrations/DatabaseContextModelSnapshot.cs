@@ -17,6 +17,81 @@ namespace WebApplication1.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.11");
 
+            modelBuilder.Entity("WebApplication1.Cargo", b =>
+                {
+                    b.Property<int>("CargoId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("CargoId");
+
+                    b.ToTable("Cargos");
+                });
+
+            modelBuilder.Entity("WebApplication1.Client", b =>
+                {
+                    b.Property<int>("ClientId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Nip")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Phone")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("ClientId");
+
+                    b.ToTable("Clients");
+                });
+
+            modelBuilder.Entity("WebApplication1.Driver", b =>
+                {
+                    b.Property<int>("DriverId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("LicenseNumber")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Phone")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Surname")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("DriverId");
+
+                    b.ToTable("Driver");
+                });
+
             modelBuilder.Entity("WebApplication1.Error", b =>
                 {
                     b.Property<int>("ErrorId")
@@ -37,6 +112,200 @@ namespace WebApplication1.Migrations
                     b.HasKey("ErrorId");
 
                     b.ToTable("Errors");
+                });
+
+            modelBuilder.Entity("WebApplication1.Invoice", b =>
+                {
+                    b.Property<int>("InvoiceId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Amount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("IssueDate")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("JobId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Maturity")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("PaymentStatus")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("InvoiceId");
+
+                    b.HasIndex("JobId");
+
+                    b.ToTable("Invoices");
+                });
+
+            modelBuilder.Entity("WebApplication1.Job", b =>
+                {
+                    b.Property<int>("JobId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ClientId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateOnly>("Date")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Remarks")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("JobId");
+
+                    b.HasIndex("ClientId");
+
+                    b.ToTable("Jobs");
+                });
+
+            modelBuilder.Entity("WebApplication1.Route", b =>
+                {
+                    b.Property<int>("RouteId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Distance")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("EndPoint")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("EstimatedTime")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("StartPoint")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("RouteId");
+
+                    b.ToTable("Routes");
+                });
+
+            modelBuilder.Entity("WebApplication1.Transport", b =>
+                {
+                    b.Property<int>("TransportId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CargoMass")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("DriverId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateOnly>("EndDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("JobId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("VehicleId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("TransportId");
+
+                    b.HasIndex("DriverId");
+
+                    b.HasIndex("JobId");
+
+                    b.HasIndex("VehicleId");
+
+                    b.ToTable("Transports");
+                });
+
+            modelBuilder.Entity("WebApplication1.Vehicle", b =>
+                {
+                    b.Property<int>("VehicleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Capacity")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("LicensePlate")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("State")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("VehicleId");
+
+                    b.ToTable("Vehicles");
+                });
+
+            modelBuilder.Entity("WebApplication1.Invoice", b =>
+                {
+                    b.HasOne("WebApplication1.Job", "Job")
+                        .WithMany()
+                        .HasForeignKey("JobId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Job");
+                });
+
+            modelBuilder.Entity("WebApplication1.Job", b =>
+                {
+                    b.HasOne("WebApplication1.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+                });
+
+            modelBuilder.Entity("WebApplication1.Transport", b =>
+                {
+                    b.HasOne("WebApplication1.Driver", "Driver")
+                        .WithMany()
+                        .HasForeignKey("DriverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Job", "Job")
+                        .WithMany()
+                        .HasForeignKey("JobId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.Vehicle", "Vehicle")
+                        .WithMany()
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Driver");
+
+                    b.Navigation("Job");
+
+                    b.Navigation("Vehicle");
                 });
 #pragma warning restore 612, 618
         }

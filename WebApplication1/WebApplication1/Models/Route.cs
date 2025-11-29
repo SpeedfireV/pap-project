@@ -18,5 +18,5 @@ public class Route
     public int Distance { get; set; }
     
     [Required]
-    public int EstimatedTime { get; set; }
+    public TimeSpan EstimatedTime { get; set; }
 }

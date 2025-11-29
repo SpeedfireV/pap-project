@@ -489,3 +489,11 @@ $RECYCLE.BIN/
 *.db-wal
 *.sqlite-shm
 *.sqlite-wal
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+*.mdf
+*.ldf
+*.sdf

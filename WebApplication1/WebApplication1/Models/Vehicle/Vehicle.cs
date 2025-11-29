@@ -12,11 +12,11 @@ public class Vehicle
     public string LicensePlate { get; set; } = string.Empty;
     
     [Required]
-    public string Type { get; set; } = string.Empty;
+    public VehicleType Type { get; set; }
     
     [Required]
     public int Capacity { get; set; }
     
     [Required]
-    public int State { get; set; }
+    public VehicleState State { get; set; }
 }

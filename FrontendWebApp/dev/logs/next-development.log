@@ -1,0 +1,544 @@
+[00:00:01.107] Server  LOG      ✓ Ready in 693ms
+[00:00:06.779] Server  LOG      ○ Compiling / ...
+[00:00:11.277] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: 233 repetitive deprecation warnings omitted.
+Run in verbose mode to see all warnings.
+
+
+[00:00:11.277] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 0, column 8 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/bootstrap.scss:0:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+0 | @import "mixins/banner";
+
+
+node_modules/bootstrap/scss/bootstrap.scss 1:9  @import
+src/styles/styles.scss 3:9                      root stylesheet
+
+
+
+[00:00:11.278] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 10, column 29 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/_functions.scss:10:29:
+Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use math.unit instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+10 |     @if $prev-num == null or unit($num) == "%" or unit($prev-num) == "%" {
+
+
+node_modules/bootstrap/scss/_functions.scss 11:30  -assert-ascending()
+node_modules/bootstrap/scss/_variables.scss 494:1  @import
+node_modules/bootstrap/scss/bootstrap.scss 8:9     @import
+src/styles/styles.scss 3:9                         root stylesheet
+
+
+
+[00:00:11.278] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 10, column 50 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/_functions.scss:10:50:
+Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use math.unit instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+10 |     @if $prev-num == null or unit($num) == "%" or unit($prev-num) == "%" {
+
+
+node_modules/bootstrap/scss/_functions.scss 11:51  -assert-ascending()
+node_modules/bootstrap/scss/_variables.scss 494:1  @import
+node_modules/bootstrap/scss/bootstrap.scss 8:9     @import
+src/styles/styles.scss 3:9                         root stylesheet
+
+
+
+[00:00:11.279] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 184, column 9 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/_functions.scss:184:9:
+red() is deprecated. Suggestion:
+
+color.channel($color, "red", $space: rgb)
+
+More info: https://sass-lang.com/d/color-functions
+
+184 |     "r": red($color),
+
+
+node_modules/bootstrap/scss/_functions.scss 185:10  luminance()
+node_modules/bootstrap/scss/_functions.scss 174:8   contrast-ratio()
+node_modules/bootstrap/scss/_functions.scss 159:22  color-contrast()
+node_modules/bootstrap/scss/_variables.scss 846:42  @import
+node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+src/styles/styles.scss 3:9                          root stylesheet
+
+
+
+[00:00:11.279] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 185, column 9 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/_functions.scss:185:9:
+green() is deprecated. Suggestion:
+
+color.channel($color, "green", $space: rgb)
+
+More info: https://sass-lang.com/d/color-functions
+
+185 |     "g": green($color),
+
+
+node_modules/bootstrap/scss/_functions.scss 186:10  luminance()
+node_modules/bootstrap/scss/_functions.scss 174:8   contrast-ratio()
+node_modules/bootstrap/scss/_functions.scss 159:22  color-contrast()
+node_modules/bootstrap/scss/_variables.scss 846:42  @import
+node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+src/styles/styles.scss 3:9                          root stylesheet
+
+
+
+[00:00:11.279] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 186, column 9 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/_functions.scss:186:9:
+blue() is deprecated. Suggestion:
+
+color.channel($color, "blue", $space: rgb)
+
+More info: https://sass-lang.com/d/color-functions
+
+186 |     "b": blue($color)
+
+
+node_modules/bootstrap/scss/_functions.scss 187:10  luminance()
+node_modules/bootstrap/scss/_functions.scss 174:8   contrast-ratio()
+node_modules/bootstrap/scss/_functions.scss 159:22  color-contrast()
+node_modules/bootstrap/scss/_variables.scss 846:42  @import
+node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+src/styles/styles.scss 3:9                          root stylesheet
+
+
+
+[00:00:11.280] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 2, column 8 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss:2:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+2 | @import "bootstrap/scss/bootstrap.scss";
+
+
+src/styles/styles.scss 3:9  root stylesheet
+
+
+
+[00:00:11.280] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 206, column 10 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/_functions.scss:206:10:
+Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use color.mix instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+206 |   @return mix(white, $color, $weight);
+
+
+node_modules/bootstrap/scss/_functions.scss 207:11  tint-color()
+node_modules/bootstrap/scss/_variables.scss 79:12   @import
+node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+src/styles/styles.scss 3:9                          root stylesheet
+
+
+
+[00:00:11.280] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 211, column 10 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/_functions.scss:211:10:
+Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use color.mix instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+211 |   @return mix(black, $color, $weight);
+
+
+node_modules/bootstrap/scss/_functions.scss 212:11  shade-color()
+node_modules/bootstrap/scss/_variables.scss 84:12   @import
+node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+src/styles/styles.scss 3:9                          root stylesheet
+
+
+
+[00:00:11.280] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 341, column 26 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/_variables.scss:341:26:
+Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use color.mix instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+341 | $light-bg-subtle:         mix($gray-100, $white) !default;
+
+
+node_modules/bootstrap/scss/_variables.scss 342:27  @import
+node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+src/styles/styles.scss 3:9                          root stylesheet
+
+
+
+[00:00:11.281] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 36, column 10 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/_functions.scss:36:10:
+red() is deprecated. Suggestion:
+
+color.channel($color, "red", $space: rgb)
+
+More info: https://sass-lang.com/d/color-functions
+
+36 |   @return red($value), green($value), blue($value);
+
+
+node_modules/bootstrap/scss/_functions.scss 37:11   to-rgb()
+node_modules/bootstrap/scss/_variables.scss 846:31  @import
+node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+src/styles/styles.scss 3:9                          root stylesheet
+
+
+
+[00:00:11.281] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 36, column 23 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/_functions.scss:36:23:
+green() is deprecated. Suggestion:
+
+color.channel($color, "green", $space: rgb)
+
+More info: https://sass-lang.com/d/color-functions
+
+36 |   @return red($value), green($value), blue($value);
+
+
+node_modules/bootstrap/scss/_functions.scss 37:24   to-rgb()
+node_modules/bootstrap/scss/_variables.scss 846:31  @import
+node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+src/styles/styles.scss 3:9                          root stylesheet
+
+
+
+[00:00:11.281] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 6, column 8 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/bootstrap.scss:6:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+6 | @import "functions";
+
+
+node_modules/bootstrap/scss/bootstrap.scss 7:9  @import
+src/styles/styles.scss 3:9                      root stylesheet
+
+
+
+[00:00:11.281] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 7, column 8 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/bootstrap.scss:7:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+7 | @import "variables";
+
+
+node_modules/bootstrap/scss/bootstrap.scss 8:9  @import
+src/styles/styles.scss 3:9                      root stylesheet
+
+
+
+[00:00:11.281] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 8, column 8 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/bootstrap.scss:8:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+8 | @import "variables-dark";
+
+
+node_modules/bootstrap/scss/bootstrap.scss 9:9  @import
+src/styles/styles.scss 3:9                      root stylesheet
+
+
+
+[00:00:11.821] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: 233 repetitive deprecation warnings omitted.
+Run in verbose mode to see all warnings.
+
+
+[00:00:11.821] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 0, column 8 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/bootstrap.scss:0:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+0 | @import "mixins/banner";
+
+
+node_modules/bootstrap/scss/bootstrap.scss 1:9  @import
+src/styles/styles.scss 3:9                      root stylesheet
+
+
+
+[00:00:11.822] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 10, column 29 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/_functions.scss:10:29:
+Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use math.unit instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+10 |     @if $prev-num == null or unit($num) == "%" or unit($prev-num) == "%" {
+
+
+node_modules/bootstrap/scss/_functions.scss 11:30  -assert-ascending()
+node_modules/bootstrap/scss/_variables.scss 494:1  @import
+node_modules/bootstrap/scss/bootstrap.scss 8:9     @import
+src/styles/styles.scss 3:9                         root stylesheet
+
+
+
+[00:00:11.822] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 10, column 50 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/_functions.scss:10:50:
+Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use math.unit instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+10 |     @if $prev-num == null or unit($num) == "%" or unit($prev-num) == "%" {
+
+
+node_modules/bootstrap/scss/_functions.scss 11:51  -assert-ascending()
+node_modules/bootstrap/scss/_variables.scss 494:1  @import
+node_modules/bootstrap/scss/bootstrap.scss 8:9     @import
+src/styles/styles.scss 3:9                         root stylesheet
+
+
+
+[00:00:11.822] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 184, column 9 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/_functions.scss:184:9:
+red() is deprecated. Suggestion:
+
+color.channel($color, "red", $space: rgb)
+
+More info: https://sass-lang.com/d/color-functions
+
+184 |     "r": red($color),
+
+
+node_modules/bootstrap/scss/_functions.scss 185:10  luminance()
+node_modules/bootstrap/scss/_functions.scss 174:8   contrast-ratio()
+node_modules/bootstrap/scss/_functions.scss 159:22  color-contrast()
+node_modules/bootstrap/scss/_variables.scss 846:42  @import
+node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+src/styles/styles.scss 3:9                          root stylesheet
+
+
+
+[00:00:11.822] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 185, column 9 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/_functions.scss:185:9:
+green() is deprecated. Suggestion:
+
+color.channel($color, "green", $space: rgb)
+
+More info: https://sass-lang.com/d/color-functions
+
+185 |     "g": green($color),
+
+
+node_modules/bootstrap/scss/_functions.scss 186:10  luminance()
+node_modules/bootstrap/scss/_functions.scss 174:8   contrast-ratio()
+node_modules/bootstrap/scss/_functions.scss 159:22  color-contrast()
+node_modules/bootstrap/scss/_variables.scss 846:42  @import
+node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+src/styles/styles.scss 3:9                          root stylesheet
+
+
+
+[00:00:11.822] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 186, column 9 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/_functions.scss:186:9:
+blue() is deprecated. Suggestion:
+
+color.channel($color, "blue", $space: rgb)
+
+More info: https://sass-lang.com/d/color-functions
+
+186 |     "b": blue($color)
+
+
+node_modules/bootstrap/scss/_functions.scss 187:10  luminance()
+node_modules/bootstrap/scss/_functions.scss 174:8   contrast-ratio()
+node_modules/bootstrap/scss/_functions.scss 159:22  color-contrast()
+node_modules/bootstrap/scss/_variables.scss 846:42  @import
+node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+src/styles/styles.scss 3:9                          root stylesheet
+
+
+
+[00:00:11.822] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 2, column 8 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss:2:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+2 | @import "bootstrap/scss/bootstrap.scss";
+
+
+src/styles/styles.scss 3:9  root stylesheet
+
+
+
+[00:00:11.823] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 206, column 10 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/_functions.scss:206:10:
+Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use color.mix instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+206 |   @return mix(white, $color, $weight);
+
+
+node_modules/bootstrap/scss/_functions.scss 207:11  tint-color()
+node_modules/bootstrap/scss/_variables.scss 79:12   @import
+node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+src/styles/styles.scss 3:9                          root stylesheet
+
+
+
+[00:00:11.823] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 211, column 10 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/_functions.scss:211:10:
+Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use color.mix instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+211 |   @return mix(black, $color, $weight);
+
+
+node_modules/bootstrap/scss/_functions.scss 212:11  shade-color()
+node_modules/bootstrap/scss/_variables.scss 84:12   @import
+node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+src/styles/styles.scss 3:9                          root stylesheet
+
+
+
+[00:00:11.823] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 341, column 26 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/_variables.scss:341:26:
+Global built-in functions are deprecated and will be removed in Dart Sass 3.0.0.
+Use color.mix instead.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+341 | $light-bg-subtle:         mix($gray-100, $white) !default;
+
+
+node_modules/bootstrap/scss/_variables.scss 342:27  @import
+node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+src/styles/styles.scss 3:9                          root stylesheet
+
+
+
+[00:00:11.823] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 36, column 10 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/_functions.scss:36:10:
+red() is deprecated. Suggestion:
+
+color.channel($color, "red", $space: rgb)
+
+More info: https://sass-lang.com/d/color-functions
+
+36 |   @return red($value), green($value), blue($value);
+
+
+node_modules/bootstrap/scss/_functions.scss 37:11   to-rgb()
+node_modules/bootstrap/scss/_variables.scss 846:31  @import
+node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+src/styles/styles.scss 3:9                          root stylesheet
+
+
+
+[00:00:11.823] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 36, column 23 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/_functions.scss:36:23:
+green() is deprecated. Suggestion:
+
+color.channel($color, "green", $space: rgb)
+
+More info: https://sass-lang.com/d/color-functions
+
+36 |   @return red($value), green($value), blue($value);
+
+
+node_modules/bootstrap/scss/_functions.scss 37:24   to-rgb()
+node_modules/bootstrap/scss/_variables.scss 846:31  @import
+node_modules/bootstrap/scss/bootstrap.scss 8:9      @import
+src/styles/styles.scss 3:9                          root stylesheet
+
+
+
+[00:00:11.823] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 6, column 8 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/bootstrap.scss:6:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+6 | @import "functions";
+
+
+node_modules/bootstrap/scss/bootstrap.scss 7:9  @import
+src/styles/styles.scss 3:9                      root stylesheet
+
+
+
+[00:00:11.824] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 7, column 8 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/bootstrap.scss:7:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+7 | @import "variables";
+
+
+node_modules/bootstrap/scss/bootstrap.scss 8:9  @import
+src/styles/styles.scss 3:9                      root stylesheet
+
+
+
+[00:00:11.824] Server  WARN     ⚠ ./EITI/PAP/project/FrontendWebApp/react-nextjs/src/styles/styles.scss
+Issue while running loader
+SassWarning: Deprecation Warning on line 8, column 8 of file:///home/batvenompl/EITI/PAP/project/FrontendWebApp/react-nextjs/node_modules/bootstrap/scss/bootstrap.scss:8:8:
+Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
+
+More info and automated migrator: https://sass-lang.com/d/import
+
+8 | @import "variables-dark";
+
+
+node_modules/bootstrap/scss/bootstrap.scss 9:9  @import
+src/styles/styles.scss 3:9                      root stylesheet
+
+
+
+[00:00:55.523] Server  LOG      ✓ Compiled in 58ms
+[00:04:16.345] Server  LOG      ✓ Compiled in 25ms

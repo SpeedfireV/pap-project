@@ -1,0 +1,38 @@
+{
+  "name": "spedition",
+  "version": "0.0.0",
+  "private": true,
+  "repository": "",
+  "license": "MIT",
+  "stackblitz": {
+    "startCommand": "npm start"
+  },
+  "scripts": {
+    "build": "next build",
+    "start": "next dev",
+    "lint": "eslint .",
+    "fix": "eslint --fix .",
+    "test": "npm run build"
+  },
+  "dependencies": {
+    "@react-oauth/google": "^0.12.2",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.5",
+    "@types/react-dom": "^19.2.3",
+    "bootstrap": "^5.3.8",
+    "jwt-decode": "^4.0.0",
+    "next": "^16.0.3",
+    "node.js": "^0.0.1-security",
+    "react": "^19.2.0",
+    "react-bootstrap": "^2.10.10",
+    "react-dom": "^19.2.0",
+    "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "@eslint/js": "^9.39.1",
+    "eslint": "^9.39.1",
+    "eslint-config-next": "^16.0.3",
+    "sass": "^1.94.2"
+  }
+}

@@ -8,7 +8,9 @@ public class Error
     [Key]
     public int ErrorId { get; set; }
     [Required]
-    public string TicketName { get; set; }
+    public string Name { get; set; }
     [Required]
     public string Description { get; set; }
+    [Required]
+    public DateTime TicketDate { get; set; }
 }

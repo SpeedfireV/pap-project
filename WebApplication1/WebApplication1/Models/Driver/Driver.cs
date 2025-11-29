@@ -22,5 +22,5 @@ public class Driver
     public int Phone { get; set; }
     
     [Required]
-    public int Status { get; set; }
+    public DriverStatus Status { get; set; }
 }

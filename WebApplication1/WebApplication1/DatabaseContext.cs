@@ -15,4 +15,5 @@ public class DatabaseContext: DbContext
     public DbSet<Job> Jobs => Set<Job>();
     public DbSet<Transport> Transports => Set<Transport>();
     public DbSet<Invoice> Invoices => Set<Invoice>();
+    public DbSet<Driver> Drivers => Set<Driver>();
 }

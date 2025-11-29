@@ -19,7 +19,7 @@ public class Job
     public DateOnly Date { get; set; }
 
     [Required]
-    public string Status { get; set; } = string.Empty;
+    public JobStatus Status { get; set; }
     
     [Required]
     public string Remarks { get; set; } = string.Empty;

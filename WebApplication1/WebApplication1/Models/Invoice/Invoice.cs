@@ -22,11 +22,11 @@ public class Invoice
     public int Amount { get; set; }
     
     [Required]
-    public int IssueDate { get; set; }
+    public DateOnly IssueDate { get; set; }
     
     [Required]
-    public int Maturity { get; set; }
+    public DateOnly Maturity { get; set; }
     
     [Required]
-    public int PaymentStatus { get; set; }
+    public InvoicePaymentStatus PaymentStatus { get; set; }
 }

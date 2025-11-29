@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Login from "@/components/Login"
 
 const Header: React.FC = () => {
   return (
@@ -21,6 +22,9 @@ const Header: React.FC = () => {
           </svg>
           <span>Header text</span>
         </Link>
+      </h1>
+      <h1 className="h4">
+        <Login />
       </h1>
     </header>
   );

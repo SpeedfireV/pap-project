@@ -20,9 +20,8 @@ ENV ASPNETCORE_URLS=http://+:8080;https://+:8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-# --- FIX: ASSUMING DOCKERFILE IS IN PROJECT ROOT, copying .csproj directly ---
-# Copy the project file first to leverage Docker layer caching.
-COPY ["WebApplication1.csproj", "."]
+# Copy the project file with its exact name and path
+COPY ["./WebApplication1.csproj", "./"]
 # Restore dependencies for the project
 RUN dotnet restore
 # Copy all source code now
@@ -38,14 +37,3 @@ FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 # Publish the application, generating all necessary files into /app/publish
 RUN dotnet publish -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
-
-# --------------------------------------------------------------------------
-# Stage 4: Final (The production-ready, minimal image)
-# --------------------------------------------------------------------------
-FROM base AS final
-WORKDIR /app
-# COPY only the published application files from the 'publish' stage.
-# This discards the entire SDK, source code, and intermediate build files.
-COPY --from=publish /app/publish .
-# Define the command to execute when the container starts.
-ENTRYPOINT ["dotnet", "WebApplication1.dll"]

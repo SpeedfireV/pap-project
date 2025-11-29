@@ -1,4 +1,7 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+﻿# --------------------------------------------------------------------------
+# Stage 1: Base Runtime (The minimal production environment)
+# --------------------------------------------------------------------------
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 USER app 
 WORKDIR /app
 EXPOSE 8080
@@ -12,15 +15,14 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-# List files to debug build context
-RUN ls -la
-
-# Use a different approach for copying the project file
-COPY WebApplication1.csproj .
+# Copy the project file with the full path
+COPY ["WebApplication1/WebApplication1.csproj", "./"]
 # Restore dependencies for the project
 RUN dotnet restore
-# Copy all source code now
-COPY . .
+
+# Copy all source code from the WebApplication1 directory
+COPY WebApplication1/. .
+
 # Build the project
 RUN dotnet build -c $BUILD_CONFIGURATION -o /app/build
 

@@ -1,5 +1,4 @@
 import Col from "react-bootstrap/Col";
-import ExamplePopover from "@/components/ExamplePopover";
 import ExampleOffcanvas from "./ExampleOffcanvas";
 
 const ExampleComponents: React.FC = () => {
@@ -13,9 +12,6 @@ const ExampleComponents: React.FC = () => {
           Some text
         </p>
       </Col>
-
-      <ExampleOffcanvas className="me-3" />
-      <ExamplePopover />
     </>
   );
 };

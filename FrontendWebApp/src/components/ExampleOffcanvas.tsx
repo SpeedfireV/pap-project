@@ -14,11 +14,14 @@ const ExampleOffcanvas: React.FC<ExampleOffcanvasProps> = ({ className }) => {
   return (
     <>
       <Button onClick={() => setShow((s) => !s)} className={className}>
-        Toggle offcanvas
+        ☰
       </Button>
-      <Offcanvas placement="end" show={show} onHide={() => setShow(false)}>
-        <Offcanvas.Header closeButton>
+      <Offcanvas placement="start" show={show} onHide={() => setShow(false)}>
+        <Offcanvas.Header className="d-flex justify-content-between">
           <Offcanvas.Title as="h5">Offcanvas</Offcanvas.Title>
+          <Button onClick={() => setShow((s) => !s)} className={className}>
+            ☰
+          </Button>
         </Offcanvas.Header>
         <Offcanvas.Body>
           <div>

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.EntityFrameworkCore;
+using WebApplication1.Models.Transport;
 
 namespace WebApplication1;
 
@@ -37,5 +38,5 @@ public class Transport
     public int CargoMass { get; set; }
     
     [Required]
-    public int Status { get; set; }
+    public TransportStatus Status { get; set; }
 }

@@ -1,0 +1,12 @@
+﻿# Binary and object files
+[Bb]in/
+[Oo]bj/
+
+# Rider files
+.idea/ # Usually checked in for team consistency, but can be ignored
+*.user
+*.bak
+
+# Rider specific files within obj
+# This line ensures all files in all 'obj' folders are ignored
+**/obj/

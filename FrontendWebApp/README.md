@@ -1,3 +1,5 @@
+Otwieranie do testowania (install tylko za pierwszym razem):
+
 npm install
 
 npm start

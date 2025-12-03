@@ -28,6 +28,26 @@ public class TransportController: ControllerBase
         return transport;
     }
 
+    [HttpPut]
+    public async Task<ActionResult<Transport>> UpdateTransport(int id, [FromBody] UpdateTransportDto dto)
+    {
+        var transport = await _context.Transports.FindAsync(id);
+        if (transport == null) return NotFound();
+
+        transport.JobId = dto.JobId ?? transport.JobId;
+        transport.VehicleId = dto.VehicleId ?? transport.VehicleId;
+        transport.DriverId = dto.DriverId ?? transport.DriverId;
+        transport.StartDate = dto.StartDate ?? transport.StartDate;
+        transport.EndDate = dto.EndDate ?? transport.EndDate;
+        transport.CargoMass = dto.CargoMass ?? transport.CargoMass;
+        transport.Status = dto.Status ?? transport.Status;
+
+        await _context.SaveChangesAsync();
+
+        return transport;
+    }
+
+
     [HttpPost]
     public async Task<ActionResult<Transport>> CreateTransport([FromBody] CreateTransportDto dto)
     {

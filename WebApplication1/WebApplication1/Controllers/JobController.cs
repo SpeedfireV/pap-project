@@ -4,7 +4,7 @@ using WebApplication1.DTOs.Job;
 namespace WebApplication1.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class JobController: ControllerBase
 {
     readonly DatabaseContext _context;
@@ -51,6 +51,31 @@ public class JobController: ControllerBase
         _context.Jobs.Remove(job);
         await _context.SaveChangesAsync();
         return Ok();
+    }
+    
+    [HttpPatch("{id}/status")]
+    public async Task<IActionResult> UpdateStatus(int id, [FromBody] JobStatus newStatus, [FromQuery] int userId)
+    {
+        var job = await _context.Jobs.FindAsync(id);
+        if (job == null) return NotFound();
+
+        // 1. Create history record
+        var history = new StatusHistory
+        {
+            JobId = job.JobId,
+            UserId = userId, // Linked to User table
+            OldStatus = job.Status,
+            NewStatus = newStatus,
+            ChangeDate = DateTime.UtcNow
+        };
+
+        // 2. Update Job
+        job.Status = newStatus;
+
+        _context.StatusHistories.Add(history);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
     }
     
 }

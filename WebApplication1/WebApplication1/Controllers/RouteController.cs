@@ -5,7 +5,7 @@ using WebApplication1.DTOs.Route;
 
 namespace WebApplication1.Controllers;
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class RouteController : ControllerBase
 {
     readonly DatabaseContext _context;

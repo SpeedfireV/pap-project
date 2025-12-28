@@ -16,4 +16,20 @@ public class DatabaseContext: DbContext
     public DbSet<Transport> Transports => Set<Transport>();
     public DbSet<Invoice> Invoices => Set<Invoice>();
     public DbSet<Driver> Drivers => Set<Driver>();
+    
+    public DbSet<StatusHistory> StatusHistories => Set<StatusHistory>();
+    
+    public DbSet<User> Users => Set<User>();
+    
+    public DbSet<TransportCost> TransportCosts => Set<TransportCost>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<StatusHistory>()
+            .HasOne(sh => sh.Job)
+            .WithMany()
+            .HasForeignKey(sh => sh.JobId)
+            .OnDelete(DeleteBehavior.Cascade);
+    }
 }

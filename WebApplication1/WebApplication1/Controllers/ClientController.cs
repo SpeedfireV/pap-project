@@ -3,7 +3,7 @@ using WebApplication1.DTOs.Client;
 
 namespace WebApplication1.Controllers;
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class ClientController: ControllerBase
 {
     private readonly DatabaseContext _context;

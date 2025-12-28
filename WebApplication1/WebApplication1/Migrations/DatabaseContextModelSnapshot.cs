@@ -89,7 +89,7 @@ namespace WebApplication1.Migrations
 
                     b.HasKey("DriverId");
 
-                    b.ToTable("Driver");
+                    b.ToTable("Drivers");
                 });
 
             modelBuilder.Entity("WebApplication1.Error", b =>
@@ -123,14 +123,14 @@ namespace WebApplication1.Migrations
                     b.Property<int>("Amount")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("IssueDate")
-                        .HasColumnType("INTEGER");
+                    b.Property<DateOnly>("IssueDate")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("JobId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Maturity")
-                        .HasColumnType("INTEGER");
+                    b.Property<DateOnly>("Maturity")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("Number")
                         .HasColumnType("INTEGER");
@@ -161,9 +161,8 @@ namespace WebApplication1.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("JobId");
 
@@ -185,8 +184,8 @@ namespace WebApplication1.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("EstimatedTime")
-                        .HasColumnType("INTEGER");
+                    b.Property<TimeSpan>("EstimatedTime")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("StartPoint")
                         .IsRequired()
@@ -195,6 +194,36 @@ namespace WebApplication1.Migrations
                     b.HasKey("RouteId");
 
                     b.ToTable("Routes");
+                });
+
+            modelBuilder.Entity("WebApplication1.StatusHistory", b =>
+                {
+                    b.Property<int>("StatusHistoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("ChangeDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("JobId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("NewStatus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("OldStatus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("StatusHistoryId");
+
+                    b.HasIndex("JobId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("StatusHistories");
                 });
 
             modelBuilder.Entity("WebApplication1.Transport", b =>
@@ -233,6 +262,66 @@ namespace WebApplication1.Migrations
                     b.HasIndex("VehicleId");
 
                     b.ToTable("Transports");
+                });
+
+            modelBuilder.Entity("WebApplication1.TransportCost", b =>
+                {
+                    b.Property<int>("TransportCostId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Category")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Currency")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DateIncurred")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("TransportId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("TransportCostId");
+
+                    b.HasIndex("TransportId");
+
+                    b.ToTable("TransportCosts");
+                });
+
+            modelBuilder.Entity("WebApplication1.User", b =>
+                {
+                    b.Property<int>("UserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ExternalId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FullName")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("WebApplication1.Vehicle", b =>
@@ -281,6 +370,25 @@ namespace WebApplication1.Migrations
                     b.Navigation("Client");
                 });
 
+            modelBuilder.Entity("WebApplication1.StatusHistory", b =>
+                {
+                    b.HasOne("WebApplication1.Job", "Job")
+                        .WithMany()
+                        .HasForeignKey("JobId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WebApplication1.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Job");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("WebApplication1.Transport", b =>
                 {
                     b.HasOne("WebApplication1.Driver", "Driver")
@@ -306,6 +414,17 @@ namespace WebApplication1.Migrations
                     b.Navigation("Job");
 
                     b.Navigation("Vehicle");
+                });
+
+            modelBuilder.Entity("WebApplication1.TransportCost", b =>
+                {
+                    b.HasOne("WebApplication1.Transport", "Transport")
+                        .WithMany()
+                        .HasForeignKey("TransportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Transport");
                 });
 #pragma warning restore 612, 618
         }

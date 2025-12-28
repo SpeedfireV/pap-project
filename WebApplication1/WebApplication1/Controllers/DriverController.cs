@@ -3,7 +3,7 @@ using WebApplication1.DTOs.Driver;
 
 namespace WebApplication1.Controllers;
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class DriverController: ControllerBase
 {
     private readonly DatabaseContext _context;

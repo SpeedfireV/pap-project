@@ -1,0 +1,29 @@
+﻿using System.Data.Entity;
+using Microsoft.AspNetCore.Mvc;
+
+namespace WebApplication1.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class StatusHistoryController : ControllerBase
+{
+    private readonly DatabaseContext _context;
+
+    public StatusHistoryController(DatabaseContext context)
+    {
+        _context = context;
+    }
+
+    // GET: api/StatusHistory/job/5
+    [HttpGet("job/{jobId}")]
+    public async Task<ActionResult<IEnumerable<StatusHistory>>> GetHistoryByJob(int jobId)
+    {
+        var history = await _context.StatusHistories
+            .Include(sh => sh.User) // Includes Google User info
+            .Where(sh => sh.JobId == jobId)
+            .OrderByDescending(sh => sh.ChangeDate)
+            .ToListAsync();
+
+        return Ok(history);
+    }
+}

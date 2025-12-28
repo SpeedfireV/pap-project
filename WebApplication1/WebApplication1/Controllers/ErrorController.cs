@@ -5,7 +5,7 @@ using WebApplication1.DTOs.Error;
 namespace WebApplication1.Controllers;
 
 [ApiController]
-[Route("[controller]")] // Base route: /Error
+[Route("api/[controller]")] // Base route: /Error
 public class ErrorController: ControllerBase
 {
     private readonly DatabaseContext _context;

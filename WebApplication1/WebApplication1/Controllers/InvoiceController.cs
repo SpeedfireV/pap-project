@@ -4,7 +4,7 @@ using WebApplication1.DTOs.Invoice;
 namespace WebApplication1.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class InvoiceController: ControllerBase
 {
     readonly DatabaseContext _context;

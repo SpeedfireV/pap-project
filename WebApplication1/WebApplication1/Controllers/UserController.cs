@@ -1,5 +1,5 @@
-﻿using System.Data.Entity;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace WebApplication1.Controllers;
 
@@ -8,53 +8,96 @@ namespace WebApplication1.Controllers;
 public class UserController : ControllerBase
 {
     private readonly DatabaseContext _context;
+    private readonly ILogger<UserController> _logger;
 
-    public UserController(DatabaseContext context)
+    public UserController(DatabaseContext context, ILogger<UserController> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
-    // This is called after the Frontend gets a success from Google
     [HttpPost("sync")]
-    public async Task<IActionResult> SyncUser([FromBody] User googleUser)
+    public async Task<IActionResult> SyncUser([FromBody] User googleUser, CancellationToken ct)
     {
-        // Check if user already exists based on Google ExternalId
-        var existingUser = await _context.Users
-            .FirstOrDefaultAsync(u => u.ExternalId == googleUser.ExternalId);
+        if (googleUser == null) return BadRequest("User data is missing.");
 
-        if (existingUser == null)
+        try
         {
-            // First time login - save them to our DB
-            _context.Users.Add(googleUser);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetUserById), new { id = googleUser.UserId }, googleUser);
-        }
+            var existingUser = await _context.Users
+                .FirstOrDefaultAsync(u => u.ExternalId == googleUser.ExternalId, ct);
 
-        // Update profile info if it changed (e.g., FullName)
-        existingUser.FullName = googleUser.FullName;
-        existingUser.Email = googleUser.Email;
-        
-        await _context.SaveChangesAsync();
-        return Ok(existingUser);
+            if (existingUser == null)
+            {
+                _logger.LogInformation("Creating new user with ExternalId: {ExternalId}", googleUser.ExternalId);
+                await _context.Users.AddAsync(googleUser, ct);
+                await _context.SaveChangesAsync(ct);
+                return CreatedAtAction(nameof(GetUserById), new { id = googleUser.UserId }, googleUser);
+            }
+
+            existingUser.FullName = googleUser.FullName;
+            existingUser.Email = googleUser.Email;
+            
+            await _context.SaveChangesAsync(ct);
+            return Ok(existingUser);
+        }
+        catch (OperationCanceledException)
+        {
+            return StatusCode(499);
+        }
+        catch (DbUpdateException ex)
+        {
+            _logger.LogError(ex, "Database error during user sync for ExternalId: {ExternalId}", googleUser.ExternalId);
+            return BadRequest("Could not sync user due to database constraints (e.g., duplicate email).");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error in SyncUser.");
+            return StatusCode(500, "Internal server error during authentication sync.");
+        }
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<User>> GetUserById(int id)
+    public async Task<ActionResult<User>> GetUserById(int id, CancellationToken ct)
     {
-        var user = await _context.Users.FindAsync(id);
-        if (user == null) return NotFound();
-        return Ok(user);
+        try
+        {
+            var user = await _context.Users.FindAsync(new object[] { id }, ct);
+            if (user == null) return NotFound($"User with ID {id} not found.");
+            
+            return Ok(user);
+        }
+        catch (OperationCanceledException)
+        {
+            return StatusCode(499);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching user {Id}.", id);
+            return StatusCode(500, "Internal server error.");
+        }
     }
 
-    // Admin can change roles (e.g., promote a user to Admin)
     [HttpPatch("{id}/role")]
-    public async Task<IActionResult> UpdateRole(int id, [FromBody] UserRole newRole)
+    public async Task<IActionResult> UpdateRole(int id, [FromBody] UserRole newRole, CancellationToken ct)
     {
-        var user = await _context.Users.FindAsync(id);
-        if (user == null) return NotFound();
+        try
+        {
+            var user = await _context.Users.FindAsync(new object[] { id }, ct);
+            if (user == null) return NotFound($"User {id} not found.");
 
-        user.Role = newRole;
-        await _context.SaveChangesAsync();
-        return NoContent();
+            user.Role = newRole;
+            await _context.SaveChangesAsync(ct);
+            return NoContent();
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            _logger.LogWarning(ex, "Concurrency conflict while updating role for user {Id}.", id);
+            return Conflict("The user record was modified by another process.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating role for user {Id}.", id);
+            return StatusCode(500, "An error occurred while updating the user role.");
+        }
     }
 }

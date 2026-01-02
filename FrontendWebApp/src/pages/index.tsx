@@ -1,12 +1,15 @@
 import Head from "next/head";
 import Container from "react-bootstrap/Container";
-import AppGuides from "@/components/AppGuides";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import ExampleComponents from "@/components/ExampleComponents";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import ExampleOffcanvas from "@/components/ExampleOffcanvas";
-import { Offcanvas } from "react-bootstrap";
+import StatsCards from "@/components/Dashboard/StatsCards";
+import Charts from "@/components/Dashboard/Charts";
+import DataTables from "@/components/Dashboard/DataTables";
+import RecentActivity from "@/components/Dashboard/RecentActivity";
 
 const CLIENT_ID = "436533053234-td33v9jq36mlrj6fkpq4sf2gpo73o284.apps.googleusercontent.com"
 
@@ -15,8 +18,8 @@ export default function Home() {
     <>
       <GoogleOAuthProvider clientId={CLIENT_ID}>
         <Head>
-          <title>Spedycja</title>
-          <meta name="description" content="" />
+          <title>Dashboard - Aplikacja Spedycyjna</title>
+          <meta name="description" content="Dashboard for managing logistics and transportation" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <link rel="icon" href="/favicon.ico" />
         </Head>
@@ -24,13 +27,27 @@ export default function Home() {
         <Container as="main" className="py-4 px-3 mx-auto">
           <Header />
 
-          <h1>Początki aplikacji</h1>
+          <h1 className="mb-4">Dashboard</h1>
 
-          <ExampleComponents />
+          {/* Statistics Cards */}
+          <StatsCards />
 
-          <hr className="col-1 my-5 mx-0" />
+          {/* Charts and Recent Activity Row */}
+          <Row className="g-4 mb-4">
+            <Col xs={12} lg={8}>
+              <Charts />
+            </Col>
+            <Col xs={12} lg={4}>
+              <RecentActivity />
+            </Col>
+          </Row>
 
-          <AppGuides />
+          {/* Data Tables */}
+          <div className="mb-4">
+            <h2 className="mb-3">Data Management</h2>
+            <DataTables />
+          </div>
+
           <Footer />
         </Container>
       </GoogleOAuthProvider>

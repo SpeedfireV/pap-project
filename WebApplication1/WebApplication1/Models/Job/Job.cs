@@ -16,7 +16,7 @@ public class Job
     public Client Client { get; set; } = null!;
     
     [Required]
-    public DateOnly Date { get; set; }
+    public DateOnly StartDate { get; set; }
 
     [Required]
     public JobStatus Status { get; set; }

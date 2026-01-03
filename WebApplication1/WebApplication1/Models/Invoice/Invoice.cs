@@ -16,7 +16,7 @@ public class Invoice
     public Job Job { get; set; } = null!;
     
     [Required]
-    public int Number { get; set; }
+    public int InvoiceNumber { get; set; }
     
     [Required]
     public int Amount { get; set; }
@@ -25,7 +25,7 @@ public class Invoice
     public DateOnly IssueDate { get; set; }
     
     [Required]
-    public DateOnly Maturity { get; set; }
+    public DateOnly PaymentDate { get; set; }
     
     [Required]
     public InvoicePaymentStatus PaymentStatus { get; set; }

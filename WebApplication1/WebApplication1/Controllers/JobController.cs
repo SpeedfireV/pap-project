@@ -34,7 +34,7 @@ public class JobController: ControllerBase
         var job = new Job
         {
             ClientId = dto.ClientId,
-            Date = dto.Date,
+            StartDate = dto.Date,
             Status = dto.Status,
             Remarks = dto.Remarks
         };

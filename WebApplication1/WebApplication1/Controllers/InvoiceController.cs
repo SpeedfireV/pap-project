@@ -34,10 +34,10 @@ public class InvoiceController: ControllerBase
         var invoice = new Invoice
         {
             JobId = dto.JobId,
-            Number = dto.Number,
+            InvoiceNumber = dto.Number,
             Amount = dto.Amount,
             IssueDate = dto.IssueDate,
-            Maturity = dto.Maturity,
+            PaymentDate = dto.Maturity,
             PaymentStatus = dto.PaymentStatus
         };
         await _context.Invoices.AddAsync(invoice);

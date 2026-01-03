@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "next build",
-    "start": "next dev",
+    "start": "next dev --webpack",
     "lint": "eslint .",
     "fix": "eslint --fix .",
     "test": "npm run build"
@@ -26,6 +26,7 @@
     "react": "^19.2.0",
     "react-bootstrap": "^2.10.10",
     "react-dom": "^19.2.0",
+    "recharts": "^3.6.0",
     "typescript": "^5.9.3"
   },
   "devDependencies": {

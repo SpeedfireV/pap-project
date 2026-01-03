@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Table, Tabs, Tab, Spinner, Badge, Button } from 'react-bootstrap';
+import { Table, Tabs, Tab, Spinner, Badge, Button, Alert } from 'react-bootstrap';
 import { clientApi, jobApi, driverApi, vehicleApi, transportApi } from '@/services/api';
 import { Client, Job, Driver, Vehicle, Transport, JobStatus, DriverStatus, VehicleState, VehicleType, TransportStatus } from '@/types/api';
 
@@ -10,18 +10,20 @@ const DataTables: React.FC = () => {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [transports, setTransports] = useState<Transport[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('clients');
 
   useEffect(() => {
     const fetchAll = async () => {
       try {
         setLoading(true);
+        setError(null);
         const [clientsData, jobsData, driversData, vehiclesData, transportsData] = await Promise.all([
-          clientApi.getAll().catch(() => []),
-          jobApi.getAll().catch(() => []),
-          driverApi.getAll().catch(() => []),
-          vehicleApi.getAll().catch(() => []),
-          transportApi.getAll().catch(() => []),
+          clientApi.getAll(),
+          jobApi.getAll(),
+          driverApi.getAll(),
+          vehicleApi.getAll(),
+          transportApi.getAll(),
         ]);
         setClients(clientsData);
         setJobs(jobsData);
@@ -30,6 +32,7 @@ const DataTables: React.FC = () => {
         setTransports(transportsData);
       } catch (error) {
         console.error('Error fetching data:', error);
+        setError("Failed to load data.");
       } finally {
         setLoading(false);
       }
@@ -125,6 +128,7 @@ const DataTables: React.FC = () => {
 
   return (
     <div className="data-tables-container">
+      {error && <Alert variant="danger" dismissible onClose={() => setError(null)}>{error}</Alert>}
       <Tabs activeKey={activeTab} onSelect={(k) => setActiveTab(k || 'clients')} className="mb-3">
         <Tab eventKey="clients" title={`Clients (${clients.length})`}>
           <div className="table-responsive">

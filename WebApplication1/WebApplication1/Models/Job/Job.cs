@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +14,7 @@ public class Job
     public int ClientId { get; set; }
 
     [ValidateNever]
+    [ForeignKey("ClientId")]
     public Client Client { get; set; } = null!;
     
     [Required]

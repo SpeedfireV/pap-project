@@ -2,6 +2,8 @@
 
 public class CreateRouteDto
 {
+    public required int TransportId { get; set; }
+    
     public required string StartPoint { get; set; }
     
     public required string EndPoint { get; set; }

@@ -73,6 +73,7 @@ public class RouteController : ControllerBase
         {
             var route = new Route
             {
+                TransportId = dto.TransportId,
                 StartPoint = dto.StartPoint,
                 EndPoint = dto.EndPoint,
                 Distance = dto.Distance,

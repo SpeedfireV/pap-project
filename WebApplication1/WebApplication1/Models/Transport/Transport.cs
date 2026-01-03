@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Models.Transport;
@@ -20,12 +21,15 @@ public class Transport
     public int DriverId { get; set; }
 
     [ValidateNever]
+    [ForeignKey("JobId")]
     public Job Job { get; set; } = null!;
     
     [ValidateNever]
+    [ForeignKey("VehicleId")]
     public Vehicle Vehicle { get; set; } = null!;
     
     [ValidateNever]
+    [ForeignKey("DriverId")]
     public Driver Driver { get; set; } = null!;
     
     [Required]

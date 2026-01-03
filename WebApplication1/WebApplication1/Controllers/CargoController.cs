@@ -44,6 +44,7 @@ public class CargoController: ControllerBase
 
         var cargo = new Cargo
         {
+            TransportId = dto.TransportId,
             Name = dto.Name, 
             Description = dto.Description,
             Amount = dto.Amount

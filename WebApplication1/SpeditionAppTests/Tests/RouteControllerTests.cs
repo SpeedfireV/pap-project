@@ -6,7 +6,7 @@ using WebApplication1;
 using WebApplication1.Controllers;
 using WebApplication1.DTOs.Route;
 
-namespace SpeditionAppTests;
+namespace SpeditionAppTests.Tests;
 
 public class RouteControllerTests
 {

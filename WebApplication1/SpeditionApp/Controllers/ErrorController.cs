@@ -18,7 +18,7 @@ public class ErrorController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Error>> CreateError([FromBody] CreateErrorDto dto, CancellationToken ct)
+    public async Task<ActionResult<Error>> CreateError([FromBody] CreateErrorDto dto)
     {
         if (dto == null) return BadRequest("Error data is required.");
 
@@ -31,15 +31,10 @@ public class ErrorController : ControllerBase
                 TicketDate = DateTime.UtcNow
             };
 
-            await _context.Errors.AddAsync(error, ct);
-            await _context.SaveChangesAsync(ct);
+            await _context.Errors.AddAsync(error);
+            await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetError), new { id = error.ErrorId }, error);
-        }
-        catch (OperationCanceledException)
-        {
-            _logger.LogWarning("Request to create error ticket was cancelled.");
-            return StatusCode(499);
         }
         catch (DbUpdateException ex)
         {
@@ -54,15 +49,11 @@ public class ErrorController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<Error>>> GetErrors(CancellationToken ct)
+    public async Task<ActionResult<List<Error>>> GetErrors()
     {
         try
         {
-            return await _context.Errors.ToListAsync(ct);
-        }
-        catch (OperationCanceledException)
-        {
-            return StatusCode(499);
+            return await _context.Errors.ToListAsync();
         }
         catch (ArgumentNullException ex)
         {
@@ -77,17 +68,13 @@ public class ErrorController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Error>> GetError(int id, CancellationToken ct)
+    public async Task<ActionResult<Error>> GetError(int id)
     {
         try
         {
-            var error = await _context.Errors.FirstOrDefaultAsync(e => e.ErrorId == id, ct);
+            var error = await _context.Errors.FirstOrDefaultAsync(e => e.ErrorId == id);
             if (error == null) return NotFound($"Error ticket {id} not found.");
             return Ok(error);
-        }
-        catch (OperationCanceledException)
-        {
-            return StatusCode(499);
         }
         catch (Exception ex)
         {
@@ -97,20 +84,16 @@ public class ErrorController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteError(int id, CancellationToken ct)
+    public async Task<ActionResult> DeleteError(int id)
     {
         try
         {
-            var error = await _context.Errors.FirstOrDefaultAsync(e => e.ErrorId == id, ct);
+            var error = await _context.Errors.FirstOrDefaultAsync(e => e.ErrorId == id);
             if (error == null) return NotFound($"Error ticket {id} not found.");
 
             _context.Errors.Remove(error);
-            await _context.SaveChangesAsync(ct);
+            await _context.SaveChangesAsync();
             return NoContent();
-        }
-        catch (OperationCanceledException)
-        {
-            return StatusCode(499);
         }
         catch (DbUpdateConcurrencyException ex)
         {

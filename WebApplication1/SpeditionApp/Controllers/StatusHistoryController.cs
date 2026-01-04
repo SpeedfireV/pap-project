@@ -17,7 +17,7 @@ public class StatusHistoryController : ControllerBase
     [HttpGet("job/{jobId}")]
     public async Task<ActionResult<IEnumerable<StatusHistory>>> GetHistoryByJob(int jobId)
     {
-        var history = await _context.StatusHistories
+        var history = await _context.StatusHistories.AsNoTracking()
             .Include(sh => sh.User) // Includes Google User info
             .Where(sh => sh.JobId == jobId)
             .OrderByDescending(sh => sh.ChangeDate)

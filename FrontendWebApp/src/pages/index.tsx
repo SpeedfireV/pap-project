@@ -1,3 +1,4 @@
+import { useState, useRef } from 'react';
 import Head from "next/head";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
@@ -14,6 +15,13 @@ import RecentActivity from "@/components/Dashboard/RecentActivity";
 const CLIENT_ID = "436533053234-td33v9jq36mlrj6fkpq4sf2gpo73o284.apps.googleusercontent.com"
 
 export default function Home() {
+  const [activeTab, setActiveTab] = useState('clients');
+  const dataTablesRef = useRef<HTMLDivElement>(null);
+
+  const handleCardClick = (tabKey: string) => {
+    setActiveTab(tabKey);
+    dataTablesRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
   return (
     <>
       <GoogleOAuthProvider clientId={CLIENT_ID}>
@@ -23,14 +31,14 @@ export default function Home() {
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <link rel="icon" href="/favicon.ico" />
         </Head>
-        <ExampleOffcanvas className="me-3"/>
+        <ExampleOffcanvas className="me-3" />
         <Container as="main" className="py-4 px-3 mx-auto">
           <Header />
 
           <h1 className="mb-4">Dashboard</h1>
 
           {/* Statistics Cards */}
-          <StatsCards />
+          <StatsCards onCardClick={handleCardClick} />
 
           {/* Charts and Recent Activity Row */}
           <Row className="g-4 mb-4">
@@ -43,9 +51,9 @@ export default function Home() {
           </Row>
 
           {/* Data Tables */}
-          <div className="mb-4">
+          <div className="mb-4" ref={dataTablesRef}>
             <h2 className="mb-3">Data Management</h2>
-            <DataTables />
+            <DataTables activeTab={activeTab} onTabChange={setActiveTab} />
           </div>
 
           <Footer />

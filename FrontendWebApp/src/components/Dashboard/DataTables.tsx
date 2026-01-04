@@ -3,7 +3,12 @@ import { Table, Tabs, Tab, Spinner, Badge, Button, Alert } from 'react-bootstrap
 import { clientApi, jobApi, driverApi, vehicleApi, transportApi } from '@/services/api';
 import { Client, Job, Driver, Vehicle, Transport, JobStatus, DriverStatus, VehicleState, VehicleType, TransportStatus } from '@/types/api';
 
-const DataTables: React.FC = () => {
+interface DataTablesProps {
+  activeTab: string;
+  onTabChange: (k: string) => void;
+}
+
+const DataTables: React.FC<DataTablesProps> = ({ activeTab, onTabChange }) => {
   const [clients, setClients] = useState<Client[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [drivers, setDrivers] = useState<Driver[]>([]);
@@ -11,7 +16,6 @@ const DataTables: React.FC = () => {
   const [transports, setTransports] = useState<Transport[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState('clients');
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -129,7 +133,7 @@ const DataTables: React.FC = () => {
   return (
     <div className="data-tables-container">
       {error && <Alert variant="danger" dismissible onClose={() => setError(null)}>{error}</Alert>}
-      <Tabs activeKey={activeTab} onSelect={(k) => setActiveTab(k || 'clients')} className="mb-3">
+      <Tabs activeKey={activeTab} onSelect={(k) => onTabChange(k || 'clients')} className="mb-3">
         <Tab eventKey="clients" title={`Clients (${clients.length})`}>
           <div className="table-responsive">
             <Table striped bordered hover>

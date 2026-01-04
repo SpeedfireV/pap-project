@@ -11,7 +11,7 @@ interface StatsData {
   totalTransports: number;
 }
 
-const StatsCards: React.FC = () => {
+const StatsCards: React.FC<{ onCardClick: (tabKey: string) => void }> = ({ onCardClick }) => {
   const [stats, setStats] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -89,6 +89,7 @@ const StatsCards: React.FC = () => {
       icon: '👥',
       color: 'primary',
       bgClass: 'bg-primary',
+      tabKey: 'clients',
     },
     {
       title: 'Active Jobs',
@@ -96,6 +97,7 @@ const StatsCards: React.FC = () => {
       icon: '📋',
       color: 'success',
       bgClass: 'bg-success',
+      tabKey: 'jobs',
     },
     {
       title: 'Available Drivers',
@@ -103,6 +105,7 @@ const StatsCards: React.FC = () => {
       icon: '🚗',
       color: 'info',
       bgClass: 'bg-info',
+      tabKey: 'drivers',
     },
     {
       title: 'Active Vehicles',
@@ -110,6 +113,7 @@ const StatsCards: React.FC = () => {
       icon: '🚛',
       color: 'warning',
       bgClass: 'bg-warning',
+      tabKey: 'vehicles',
     },
     {
       title: 'Total Transports',
@@ -117,6 +121,7 @@ const StatsCards: React.FC = () => {
       icon: '📦',
       color: 'secondary',
       bgClass: 'bg-secondary',
+      tabKey: 'transports',
     },
   ];
 
@@ -124,7 +129,13 @@ const StatsCards: React.FC = () => {
     <Row className="g-4 mb-4">
       {statCards.map((stat, index) => (
         <Col key={index} xs={12} sm={6} lg={4} xl={2.4}>
-          <Card className="h-100 shadow-sm border-0 stats-card">
+          <Card
+            className="h-100 shadow-sm border-0 stats-card"
+            onClick={() => onCardClick(stat.tabKey)}
+            style={{ cursor: 'pointer', transition: 'transform 0.2s' }}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-5px)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
+          >
             <Card.Body className="d-flex align-items-center">
               <div className={`${stat.bgClass} text-white rounded-circle d-flex align-items-center justify-content-center me-3`} style={{ width: '60px', height: '60px', fontSize: '24px' }}>
                 {stat.icon}

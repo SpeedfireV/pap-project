@@ -14,7 +14,6 @@ public class StatusHistoryController : ControllerBase
         _context = context;
     }
 
-    // GET: api/StatusHistory/job/5
     [HttpGet("job/{jobId}")]
     public async Task<ActionResult<IEnumerable<StatusHistory>>> GetHistoryByJob(int jobId)
     {

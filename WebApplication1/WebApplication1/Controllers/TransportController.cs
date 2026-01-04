@@ -18,16 +18,28 @@ public class TransportController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Transport>>> GetTransports()
+    public async Task<ActionResult<IEnumerable<Transport>>> GetTransports(
+        [FromBody] int lastId = -1, 
+        [FromBody] int amount = 10)
     {
+        if (amount <= 0) amount = 10;
+        if (amount > 100) amount = 100;
+
         try
         {
-            return await _context.Transports.ToListAsync();
+            var transports = await _context.Transports
+                .AsNoTracking() 
+                .Where(e => e.TransportId > lastId)
+                .OrderBy(e => e.TransportId)
+                .Take(amount)
+                .ToListAsync();
+
+            return Ok(transports);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while fetching all transports.");
-            return StatusCode(500, "Internal server error while retrieving data.");
+            _logger.LogError(ex, "Error fetching transports after ID {LastId} with limit {Amount}", lastId, amount);
+            return StatusCode(StatusCodes.Status500InternalServerError, "An unexpected error occurred.");
         }
     }
 
@@ -52,8 +64,6 @@ public class TransportController : ControllerBase
     [HttpPut("{id}")] 
     public async Task<ActionResult<Transport>> UpdateTransport(int id, [FromBody] UpdateTransportDto dto)
     {
-        if (dto == null) return BadRequest("Update data is null.");
-
         try
         {
             var transport = await _context.Transports.FindAsync(id);

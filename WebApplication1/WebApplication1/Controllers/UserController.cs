@@ -17,32 +17,26 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("sync")]
-    public async Task<IActionResult> SyncUser([FromBody] User googleUser, CancellationToken ct)
+    public async Task<IActionResult> SyncUser([FromBody] User googleUser)
     {
-        if (googleUser == null) return BadRequest("User data is missing.");
-
         try
         {
             var existingUser = await _context.Users
-                .FirstOrDefaultAsync(u => u.ExternalId == googleUser.ExternalId, ct);
+                .FirstOrDefaultAsync(u => u.ExternalId == googleUser.ExternalId);
 
             if (existingUser == null)
             {
                 _logger.LogInformation("Creating new user with ExternalId: {ExternalId}", googleUser.ExternalId);
-                await _context.Users.AddAsync(googleUser, ct);
-                await _context.SaveChangesAsync(ct);
+                await _context.Users.AddAsync(googleUser);
+                await _context.SaveChangesAsync();
                 return CreatedAtAction(nameof(GetUserById), new { id = googleUser.UserId }, googleUser);
             }
 
             existingUser.FullName = googleUser.FullName;
             existingUser.Email = googleUser.Email;
             
-            await _context.SaveChangesAsync(ct);
+            await _context.SaveChangesAsync();
             return Ok(existingUser);
-        }
-        catch (OperationCanceledException)
-        {
-            return StatusCode(499);
         }
         catch (DbUpdateException ex)
         {
@@ -57,18 +51,14 @@ public class UserController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<User>> GetUserById(int id, CancellationToken ct)
+    public async Task<ActionResult<User>> GetUserById(int id)
     {
         try
         {
-            var user = await _context.Users.FindAsync(new object[] { id }, ct);
+            var user = await _context.Users.FindAsync(id);
             if (user == null) return NotFound($"User with ID {id} not found.");
             
             return Ok(user);
-        }
-        catch (OperationCanceledException)
-        {
-            return StatusCode(499);
         }
         catch (Exception ex)
         {
@@ -78,15 +68,15 @@ public class UserController : ControllerBase
     }
 
     [HttpPatch("{id}/role")]
-    public async Task<IActionResult> UpdateRole(int id, [FromBody] UserRole newRole, CancellationToken ct)
+    public async Task<IActionResult> UpdateRole(int id, [FromBody] UserRole newRole)
     {
         try
         {
-            var user = await _context.Users.FindAsync(new object[] { id }, ct);
+            var user = await _context.Users.FindAsync(id);
             if (user == null) return NotFound($"User {id} not found.");
 
             user.Role = newRole;
-            await _context.SaveChangesAsync(ct);
+            await _context.SaveChangesAsync();
             return NoContent();
         }
         catch (DbUpdateConcurrencyException ex)

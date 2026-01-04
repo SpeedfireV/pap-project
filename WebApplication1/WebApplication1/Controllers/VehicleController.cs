@@ -18,15 +18,11 @@ public class VehicleController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Vehicle>>> GetVehicles(CancellationToken ct)
+    public async Task<ActionResult<IEnumerable<Vehicle>>> GetVehicles([FromBody] int lastId = -1, [FromBody] int amount = 100)
     {
         try
         {
-            return await _context.Vehicles.ToListAsync(ct);
-        }
-        catch (OperationCanceledException)
-        {
-            return StatusCode(499);
+            return await _context.Vehicles.Where(e => e.VehicleId > lastId).OrderBy(e => e.VehicleId).Take(amount).ToListAsync();
         }
         catch (ArgumentNullException ex)
         {
@@ -41,20 +37,16 @@ public class VehicleController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Vehicle>> GetVehicle(int id, CancellationToken ct)
+    public async Task<ActionResult<Vehicle>> GetVehicle(int id)
     {
         try
         {
-            var vehicle = await _context.Vehicles.FindAsync(new object[] { id }, ct);
+            var vehicle = await _context.Vehicles.FindAsync(id);
             
             if (vehicle == null) 
                 return NotFound($"Vehicle with ID {id} not found.");
             
             return Ok(vehicle);
-        }
-        catch (OperationCanceledException)
-        {
-            return StatusCode(499);
         }
         catch (Exception ex)
         {
@@ -64,10 +56,8 @@ public class VehicleController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Vehicle>> CreateVehicle([FromBody] CreateVehicleDto dto, CancellationToken ct)
+    public async Task<ActionResult<Vehicle>> CreateVehicle([FromBody] CreateVehicleDto dto)
     {
-        if (dto == null) return BadRequest("Vehicle data is missing.");
-
         try
         {
             var vehicle = new Vehicle
@@ -78,14 +68,10 @@ public class VehicleController : ControllerBase
                 State = dto.State
             };
 
-            await _context.Vehicles.AddAsync(vehicle, ct);
-            await _context.SaveChangesAsync(ct);
+            await _context.Vehicles.AddAsync(vehicle);
+            await _context.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetVehicle), new { id = vehicle.VehicleId }, vehicle);
-        }
-        catch (OperationCanceledException)
-        {
-            return StatusCode(499);
         }
         catch (DbUpdateException ex)
         {
@@ -100,21 +86,17 @@ public class VehicleController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteVehicle(int id, CancellationToken ct)
+    public async Task<ActionResult> DeleteVehicle(int id)
     {
         try
         {
-            var vehicle = await _context.Vehicles.FindAsync(new object[] { id }, ct);
+            var vehicle = await _context.Vehicles.FindAsync(id);
             if (vehicle == null) return NotFound($"Vehicle {id} not found.");
 
             _context.Vehicles.Remove(vehicle);
-            await _context.SaveChangesAsync(ct);
+            await _context.SaveChangesAsync();
             
             return NoContent();
-        }
-        catch (OperationCanceledException)
-        {
-            return StatusCode(499);
         }
         catch (DbUpdateConcurrencyException ex)
         {

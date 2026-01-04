@@ -18,15 +18,11 @@ public class RouteController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Route>>> GetRoutes(CancellationToken ct)
+    public async Task<ActionResult<IEnumerable<Route>>> GetRoutes([FromBody] int lastId = -1, [FromBody] int amount = 100)
     {
         try
         {
-            return await _context.Routes.ToListAsync(ct);
-        }
-        catch (OperationCanceledException)
-        {
-            return StatusCode(499);
+            return await _context.Routes.Where(e => e.RouteId > lastId).OrderBy(e => e.RouteId).Take(amount).ToListAsync();
         }
         catch (ArgumentNullException ex)
         {
@@ -41,21 +37,17 @@ public class RouteController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<Route>> GetRoute(int id, CancellationToken ct)
+    public async Task<ActionResult<Route>> GetRoute(int id)
     {
         try
         {
-            var route = await _context.Routes.FindAsync(new object[] { id }, ct);
+            var route = await _context.Routes.FindAsync(id);
             
             if (route == null)
             {
                 return NotFound($"Route with ID {id} was not found.");
             }
             return Ok(route);
-        }
-        catch (OperationCanceledException)
-        {
-            return StatusCode(499);
         }
         catch (Exception ex)
         {
@@ -65,9 +57,8 @@ public class RouteController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Route>> CreateRoute([FromBody] CreateRouteDto dto, CancellationToken ct)
+    public async Task<ActionResult<Route>> CreateRoute([FromBody] CreateRouteDto dto)
     {
-        if (dto == null) return BadRequest("Route data cannot be null.");
 
         try
         {
@@ -80,18 +71,14 @@ public class RouteController : ControllerBase
                 EstimatedTime = dto.EstimatedTime
             };
 
-            await _context.Routes.AddAsync(route, ct);
-            await _context.SaveChangesAsync(ct);
+            await _context.Routes.AddAsync(route);
+            await _context.SaveChangesAsync();
 
             return CreatedAtAction(
                 nameof(GetRoute),
                 new { id = route.RouteId },
                 route
             );
-        }
-        catch (OperationCanceledException)
-        {
-            return StatusCode(499);
         }
         catch (DbUpdateException ex)
         {
@@ -106,22 +93,18 @@ public class RouteController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteRoute(int id, CancellationToken ct)
+    public async Task<ActionResult> DeleteRoute(int id)
     {
         try
         {
-            var route = await _context.Routes.FindAsync(new object[] { id }, ct);
+            var route = await _context.Routes.FindAsync(id);
             if (route == null) 
                 return NotFound($"Route with ID {id} not found.");
 
             _context.Routes.Remove(route);
-            await _context.SaveChangesAsync(ct);
+            await _context.SaveChangesAsync();
             
             return NoContent();
-        }
-        catch (OperationCanceledException)
-        {
-            return StatusCode(499);
         }
         catch (DbUpdateConcurrencyException ex)
         {

@@ -19,7 +19,7 @@ public class DatabaseContext: DbContext
     
     public DbSet<StatusHistory> StatusHistories => Set<StatusHistory>();
     
-    public DbSet<User> Users => Set<User>();
+    public DbSet<MaintenanceLog> MaintenanceLogs => Set<MaintenanceLog>();
     
     public DbSet<TransportCost> TransportCosts => Set<TransportCost>();
 

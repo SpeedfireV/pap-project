@@ -17,13 +17,6 @@ public class StatusHistory
     public Job Job { get; set; } = null!;
 
     [Required]
-    public int UserId { get; set; }
-
-    [ValidateNever]
-    [ForeignKey("UserId")]
-    public User User { get; set; } = null!;
-
-    [Required]
     public JobStatus OldStatus { get; set; }
 
     [Required]

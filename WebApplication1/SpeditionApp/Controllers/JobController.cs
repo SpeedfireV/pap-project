@@ -63,7 +63,6 @@ public class JobController: ControllerBase
         var history = new StatusHistory
         {
             JobId = job.JobId,
-            UserId = userId, // Linked to User table
             OldStatus = job.Status,
             NewStatus = newStatus,
             ChangeDate = DateTime.UtcNow

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.DTOs.Vehicle;
 
@@ -17,6 +18,7 @@ public class VehicleController : ControllerBase
         _logger = logger;
     }
 
+    
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Vehicle>>> GetVehicles([FromQuery] int lastId = -1, [FromQuery] int amount = 100)
     {
@@ -55,6 +57,7 @@ public class VehicleController : ControllerBase
         }
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult<Vehicle>> CreateVehicle([FromBody] CreateVehicleDto dto)
     {
@@ -84,7 +87,8 @@ public class VehicleController : ControllerBase
             return StatusCode(500, "Internal server error.");
         }
     }
-
+    
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteVehicle(int id)
     {

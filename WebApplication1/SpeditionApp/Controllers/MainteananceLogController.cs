@@ -21,6 +21,7 @@ public class MaintenanceLogController : ControllerBase
         return await _context.MaintenanceLogs.ToListAsync();
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult<MaintenanceLog>> CreateLog(MaintenanceLog log)
     {

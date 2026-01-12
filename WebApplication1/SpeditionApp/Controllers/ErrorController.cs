@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.DTOs.Error;
 
@@ -30,7 +31,8 @@ public class ErrorController : ControllerBase
         if (error == null) return NotFound("Error ticket not found.");
         return Ok(error);
     }
-
+    
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult<Error>> CreateError(CreateErrorDto dto)
     {
@@ -46,7 +48,8 @@ public class ErrorController : ControllerBase
 
         return CreatedAtAction(nameof(GetError), new { id = error.Id }, error);
     }
-
+    
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteError(int id)
     {

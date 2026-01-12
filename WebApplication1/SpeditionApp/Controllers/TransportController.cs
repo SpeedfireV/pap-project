@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.DTOs.Transport;
 
@@ -60,7 +61,7 @@ public class TransportController : ControllerBase
             return StatusCode(500, "Internal server error.");
         }
     }
-
+    [Authorize]
     [HttpPut("{id}")] 
     public async Task<ActionResult<Transport>> UpdateTransport(int id, [FromBody] UpdateTransportDto dto)
     {
@@ -96,7 +97,7 @@ public class TransportController : ControllerBase
             return StatusCode(500, "Internal server error.");
         }
     }
-
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult<Transport>> CreateTransport([FromBody] CreateTransportDto dto)
     {
@@ -131,7 +132,7 @@ public class TransportController : ControllerBase
             return StatusCode(500, "Internal server error.");
         }
     }
-
+    [Authorize]
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteTransport(int id)
     {

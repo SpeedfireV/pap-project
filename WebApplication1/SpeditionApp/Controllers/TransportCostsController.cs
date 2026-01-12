@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.DTOs.TransportCost;
 
@@ -16,6 +17,8 @@ public class TransportCostsController : ControllerBase
         _context = context;
         _logger = logger;
     }
+    
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult<TransportCost>> PostTransportCost(
         [FromBody] CreateTransportCostDto dto)
@@ -48,7 +51,7 @@ public class TransportCostsController : ControllerBase
             return StatusCode(500, "Internal server error.");
         }
     }
-
+    
     [HttpGet("transport/{transportId}")]
     public async Task<ActionResult<IEnumerable<TransportCost>>> GetCostsByTransport(int transportId)
     {

@@ -1,39 +1,37 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Greg\\Desktop\\STUDIA\\Informatyka\\Semestr 3\\PAP\\pap-project\\WebApplication1\\SpeditionAppTests\\SpeditionAppTests.csproj": {}
+    "C:\\Users\\grzeg\\Desktop\\STUDIA\\PAP\\pap-project\\WebApplication1\\SpeditionAppTests\\SpeditionAppTests.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Greg\\Desktop\\STUDIA\\Informatyka\\Semestr 3\\PAP\\pap-project\\WebApplication1\\SpeditionAppTests\\SpeditionAppTests.csproj": {
+    "C:\\Users\\grzeg\\Desktop\\STUDIA\\PAP\\pap-project\\WebApplication1\\SpeditionAppTests\\SpeditionAppTests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Greg\\Desktop\\STUDIA\\Informatyka\\Semestr 3\\PAP\\pap-project\\WebApplication1\\SpeditionAppTests\\SpeditionAppTests.csproj",
+        "projectUniqueName": "C:\\Users\\grzeg\\Desktop\\STUDIA\\PAP\\pap-project\\WebApplication1\\SpeditionAppTests\\SpeditionAppTests.csproj",
         "projectName": "SpeditionAppTests",
-        "projectPath": "C:\\Users\\Greg\\Desktop\\STUDIA\\Informatyka\\Semestr 3\\PAP\\pap-project\\WebApplication1\\SpeditionAppTests\\SpeditionAppTests.csproj",
-        "packagesPath": "C:\\Users\\Greg\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Greg\\Desktop\\STUDIA\\Informatyka\\Semestr 3\\PAP\\pap-project\\WebApplication1\\SpeditionAppTests\\obj\\",
+        "projectPath": "C:\\Users\\grzeg\\Desktop\\STUDIA\\PAP\\pap-project\\WebApplication1\\SpeditionAppTests\\SpeditionAppTests.csproj",
+        "packagesPath": "C:\\Users\\grzeg\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\grzeg\\Desktop\\STUDIA\\PAP\\pap-project\\WebApplication1\\SpeditionAppTests\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\Greg\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\grzeg\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net9.0": {
             "targetAlias": "net9.0",
             "projectReferences": {
-              "C:\\Users\\Greg\\Desktop\\STUDIA\\Informatyka\\Semestr 3\\PAP\\pap-project\\WebApplication1\\SpeditionApp\\SpeditionApp.csproj": {
-                "projectPath": "C:\\Users\\Greg\\Desktop\\STUDIA\\Informatyka\\Semestr 3\\PAP\\pap-project\\WebApplication1\\SpeditionApp\\SpeditionApp.csproj"
+              "C:\\Users\\grzeg\\Desktop\\STUDIA\\PAP\\pap-project\\WebApplication1\\SpeditionApp\\SpeditionApp.csproj": {
+                "projectPath": "C:\\Users\\grzeg\\Desktop\\STUDIA\\PAP\\pap-project\\WebApplication1\\SpeditionApp\\SpeditionApp.csproj"
               }
             }
           }
@@ -47,7 +45,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net9.0": {
@@ -94,32 +93,30 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.308/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\Greg\\Desktop\\STUDIA\\Informatyka\\Semestr 3\\PAP\\pap-project\\WebApplication1\\SpeditionApp\\SpeditionApp.csproj": {
+    "C:\\Users\\grzeg\\Desktop\\STUDIA\\PAP\\pap-project\\WebApplication1\\SpeditionApp\\SpeditionApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Greg\\Desktop\\STUDIA\\Informatyka\\Semestr 3\\PAP\\pap-project\\WebApplication1\\SpeditionApp\\SpeditionApp.csproj",
+        "projectUniqueName": "C:\\Users\\grzeg\\Desktop\\STUDIA\\PAP\\pap-project\\WebApplication1\\SpeditionApp\\SpeditionApp.csproj",
         "projectName": "SpeditionApp",
-        "projectPath": "C:\\Users\\Greg\\Desktop\\STUDIA\\Informatyka\\Semestr 3\\PAP\\pap-project\\WebApplication1\\SpeditionApp\\SpeditionApp.csproj",
-        "packagesPath": "C:\\Users\\Greg\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Greg\\Desktop\\STUDIA\\Informatyka\\Semestr 3\\PAP\\pap-project\\WebApplication1\\SpeditionApp\\obj\\",
+        "projectPath": "C:\\Users\\grzeg\\Desktop\\STUDIA\\PAP\\pap-project\\WebApplication1\\SpeditionApp\\SpeditionApp.csproj",
+        "packagesPath": "C:\\Users\\grzeg\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\grzeg\\Desktop\\STUDIA\\PAP\\pap-project\\WebApplication1\\SpeditionApp\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\Greg\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\grzeg\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -137,7 +134,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net9.0": {
@@ -233,7 +231,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.308/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

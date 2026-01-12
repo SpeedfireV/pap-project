@@ -13,12 +13,15 @@ public class MaintenanceLog
 
     [Required]
     [StringLength(100)]
-    public string ServiceType { get; set; }
+    // Use 'required' to ensure this is set during object creation and satisfy the compiler
+    public required string ServiceType { get; set; }
 
     public int OdometerReading { get; set; }
 
     [StringLength(1000)]
-    public string Description { get; set; }
+    // If the description is mandatory, use 'required'. 
+    // If it can be empty, initialize it with string.Empty.
+    public required string Description { get; set; }
 
     public float Cost { get; set; }
 

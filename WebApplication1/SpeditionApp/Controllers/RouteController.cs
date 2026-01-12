@@ -16,18 +16,18 @@ public class RouteController : ControllerBase
         _context = context;
         _logger = logger;
     }
-
+    
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Route>>> GetRoutes([FromBody] int lastId = -1, [FromBody] int amount = 100)
+    public async Task<ActionResult<IEnumerable<Route>>> GetRoutes([FromQuery] int lastId = -1, [FromQuery] int amount = 100)
     {
         try
         {
-            return await _context.Routes.Where(e => e.RouteId > lastId).OrderBy(e => e.RouteId).Take(amount).ToListAsync();
-        }
-        catch (ArgumentNullException ex)
-        {
-            _logger.LogCritical(ex, "Routes DbSet is null. Check configuration.");
-            return StatusCode(500, "Database configuration error.");
+            // Pagination logic: Get the next 'amount' of routes starting after 'lastId'
+            return await _context.Routes
+                .Where(e => e.RouteId > lastId)
+                .OrderBy(e => e.RouteId)
+                .Take(amount)
+                .ToListAsync();
         }
         catch (Exception ex)
         {

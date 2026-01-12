@@ -1,16 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
 
 namespace WebApplication1;
 
 public class Error
 {
     [Key]
-    public int ErrorId { get; set; }
+    public int Id { get; set; }
+
     [Required]
-    public string Name { get; set; }
+    public required string Name { get; set; }
+
     [Required]
-    public string Description { get; set; }
-    [Required]
-    public DateTime TicketDate { get; set; }
+    public required string Description { get; set; }
+
+    public DateTime TicketDate { get; set; } = DateTime.UtcNow;
 }

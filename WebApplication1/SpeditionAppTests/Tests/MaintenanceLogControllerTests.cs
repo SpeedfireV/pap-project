@@ -68,21 +68,24 @@ public class MaintenanceLogControllerTests
     
         context.MaintenanceLogs.AddRange(new List<MaintenanceLog>
         {
-            new MaintenanceLog { 
+            new()
+            { 
                 MaintenanceId = 1, 
                 VehicleId = targetVehicleId, 
                 ServiceDate = new DateTime(2023, 1, 1), 
                 ServiceType = "Oil Change", 
                 Description = "Standard service" // Dodano wymagane pole
             },
-            new MaintenanceLog { 
+            new()
+            { 
                 MaintenanceId = 2, 
                 VehicleId = targetVehicleId, 
                 ServiceDate = new DateTime(2023, 5, 1), 
                 ServiceType = "Tires", 
                 Description = "Seasonal change" // Dodano wymagane pole
             },
-            new MaintenanceLog { 
+            new()
+            { 
                 MaintenanceId = 3, 
                 VehicleId = 99, 
                 ServiceDate = new DateTime(2023, 2, 1), 

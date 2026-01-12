@@ -17,93 +17,45 @@ public class ErrorController : ControllerBase
         _logger = logger;
     }
 
-    [HttpPost]
-    public async Task<ActionResult<Error>> CreateError([FromBody] CreateErrorDto dto)
-    {
-        if (dto == null) return BadRequest("Error data is required.");
-
-        try
-        {
-            var error = new Error
-            {
-                Name = dto.TicketName,
-                Description = dto.TicketDescription,
-                TicketDate = DateTime.UtcNow
-            };
-
-            await _context.Errors.AddAsync(error);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetError), new { id = error.ErrorId }, error);
-        }
-        catch (DbUpdateException ex)
-        {
-            _logger.LogError(ex, "Failed to save error ticket to database.");
-            return StatusCode(500, "Database error while saving the ticket.");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Unexpected error in CreateError.");
-            return StatusCode(500, "Internal server error.");
-        }
-    }
-
     [HttpGet]
     public async Task<ActionResult<List<Error>>> GetErrors()
     {
-        try
-        {
-            return await _context.Errors.ToListAsync();
-        }
-        catch (ArgumentNullException ex)
-        {
-            _logger.LogCritical(ex, "Errors DbSet is null.");
-            return StatusCode(500, "Configuration error.");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Could not fetch error tickets.");
-            return StatusCode(500, "Internal server error.");
-        }
+        return await _context.Errors.ToListAsync();
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<Error>> GetError(int id)
     {
-        try
+        var error = await _context.Errors.FindAsync(id);
+        if (error == null) return NotFound("Error ticket not found.");
+        return Ok(error);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<Error>> CreateError(CreateErrorDto dto)
+    {
+        var error = new Error
         {
-            var error = await _context.Errors.FirstOrDefaultAsync(e => e.ErrorId == id);
-            if (error == null) return NotFound($"Error ticket {id} not found.");
-            return Ok(error);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error fetching ticket {Id}.", id);
-            return StatusCode(500, "Internal server error.");
-        }
+            Name = dto.TicketName,
+            Description = dto.TicketDescription,
+            TicketDate = DateTime.UtcNow
+        };
+
+        _context.Errors.Add(error);
+        await _context.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(GetError), new { id = error.Id }, error);
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteError(int id)
+    public async Task<IActionResult> DeleteError(int id)
     {
-        try
-        {
-            var error = await _context.Errors.FirstOrDefaultAsync(e => e.ErrorId == id);
-            if (error == null) return NotFound($"Error ticket {id} not found.");
+        var error = await _context.Errors.FindAsync(id);
+        if (error == null) return NotFound("Error ticket not found.");
 
-            _context.Errors.Remove(error);
-            await _context.SaveChangesAsync();
-            return NoContent();
-        }
-        catch (DbUpdateConcurrencyException ex)
-        {
-            _logger.LogWarning(ex, "Concurrency error deleting ticket {Id}.", id);
-            return Conflict("The ticket was already deleted or modified.");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error deleting ticket {Id}.", id);
-            return StatusCode(500, "Internal server error.");
-        }
+        _context.Errors.Remove(error);
+        await _context.SaveChangesAsync();
+
+        return NoContent();
     }
 }

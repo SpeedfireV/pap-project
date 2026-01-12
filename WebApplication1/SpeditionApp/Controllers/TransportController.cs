@@ -19,8 +19,8 @@ public class TransportController : ControllerBase
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Transport>>> GetTransports(
-        [FromBody] int lastId = -1, 
-        [FromBody] int amount = 10)
+        [FromQuery] int lastId = -1, 
+        [FromQuery] int amount = 10)
     {
         if (amount <= 0) amount = 10;
         if (amount > 100) amount = 100;

@@ -18,7 +18,7 @@ public class VehicleController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Vehicle>>> GetVehicles([FromBody] int lastId = -1, [FromBody] int amount = 100)
+    public async Task<ActionResult<IEnumerable<Vehicle>>> GetVehicles([FromQuery] int lastId = -1, [FromQuery] int amount = 100)
     {
         try
         {

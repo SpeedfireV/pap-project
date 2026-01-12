@@ -1,0 +1,15 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=012771b9_002Df29a_002D4b66_002Dbe6d_002D5de144ac5e43/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="All tests from &amp;lt;SpeditionAppTests&amp;gt; #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;Project Location="C:\Users\Greg\Desktop\STUDIA\Informatyka\Semestr 3\PAP\pap-project\WebApplication1\SpeditionAppTests" Presentation="&amp;lt;SpeditionAppTests&amp;gt;" /&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=536fbdbf_002D1215_002D4aa3_002D94c8_002D4faafc8bb038/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="RouteControllerTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;Project Location="C:\Users\Greg\Desktop\STUDIA\Informatyka\Semestr 3\PAP\pap-project\WebApplication1\SpeditionAppTests" Presentation="&amp;lt;SpeditionAppTests&amp;gt;" /&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=ae714ac9_002Dbd68_002D45ed_002D8b79_002Dab5beb7118fa/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="All tests from &amp;lt;SpeditionAppTests&amp;gt;" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;Project Location="C:\Users\Greg\Desktop\STUDIA\Informatyka\Semestr 3\PAP\pap-project\WebApplication1\SpeditionAppTests" Presentation="&amp;lt;SpeditionAppTests&amp;gt;" /&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=e4963a6e_002D7b71_002D4f22_002D98c1_002D064f8d09c7af/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="GetRoutes_ReturnsPagedList" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::D4E1560B-B99F-4417-85F2-FF0A3BC225CC::net9.0::SpeditionAppTests.RouteControllerTests.GetRoutes_ReturnsPagedList&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

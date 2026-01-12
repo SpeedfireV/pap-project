@@ -12,8 +12,6 @@ import Charts from "@/components/Dashboard/Charts";
 import DataTables from "@/components/Dashboard/DataTables";
 import RecentActivity from "@/components/Dashboard/RecentActivity";
 
-const CLIENT_ID = "436533053234-td33v9jq36mlrj6fkpq4sf2gpo73o284.apps.googleusercontent.com"
-
 export default function Home() {
   const [activeTab, setActiveTab] = useState('clients');
   const dataTablesRef = useRef<HTMLDivElement>(null);
@@ -24,7 +22,6 @@ export default function Home() {
   };
   return (
     <>
-      <GoogleOAuthProvider clientId={CLIENT_ID}>
         <Head>
           <title>Dashboard - Aplikacja Spedycyjna</title>
           <meta name="description" content="Dashboard for managing logistics and transportation" />
@@ -58,7 +55,6 @@ export default function Home() {
 
           <Footer />
         </Container>
-      </GoogleOAuthProvider>
     </>
   );
 }

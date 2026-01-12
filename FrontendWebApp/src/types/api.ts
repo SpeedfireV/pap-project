@@ -65,6 +65,12 @@ export interface StatusHistory {
   changeDate: string; // DateTime serialized as string
 }
 
+export interface ErrorTicket {
+  name: string;
+  description: string;
+  ticketDate: string; // DateTime serialized as string
+}
+
 // Enums
 export enum JobStatus {
   Normal = 0,
@@ -179,3 +185,8 @@ export interface UpdateTransportDto {
   status?: TransportStatus;
 }
 
+export interface CreateErrorTicketDto {
+  name: string;
+  description: string;
+  ticketDate: string;
+}

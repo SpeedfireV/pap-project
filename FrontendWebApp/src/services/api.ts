@@ -14,6 +14,8 @@ import {
   CreateRouteDto,
   UpdateTransportDto,
   JobStatus,
+  ErrorTicket,
+  CreateErrorTicketDto
 } from '@/types/api';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5219';
@@ -157,3 +159,15 @@ export const statusHistoryApi = {
 // Export error class for use in components
 export { ApiError };
 
+// Error API
+export const errorTicketApi = {
+  getAll: (): Promise<ErrorTicket[]> => fetchApi<ErrorTicket[]>('/api/ErrorTicket'),
+  getById: (id: number): Promise<ErrorTicket> => fetchApi<ErrorTicket>(`/api/ErrorTicket/${id}`),
+  create: (dto: CreateErrorTicketDto): Promise<ErrorTicket> =>
+    fetchApi<ErrorTicket>('/api/ErrorTicket', {
+      method: 'POST',
+      body: JSON.stringify(dto),
+    }),
+  delete: (id: number): Promise<void> =>
+    fetchApi<void>(`/api/ErrorTicket/${id}`, { method: 'DELETE' }),
+};

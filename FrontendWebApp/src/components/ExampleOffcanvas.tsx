@@ -14,6 +14,7 @@ const ExampleOffcanvas: React.FC<ExampleOffcanvasProps> = ({ className }) => {
   const menuItems = [
     { href: "/", label: "Dashboard" },
     { href: "/bug_report", label: "Zgłoś błąd"},
+    { href: "/data_entry", label: "Dodaj dane"}
   ];
 
   return (

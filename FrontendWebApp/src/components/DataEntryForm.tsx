@@ -8,7 +8,6 @@ import {
   vehicleApi,
   transportApi,
   routeApi,
-  errorTicketApi,
   ApiError
 } from '../services/api';
 import {
@@ -18,7 +17,6 @@ import {
   CreateVehicleDto,
   CreateTransportDto,
   CreateRouteDto,
-  CreateErrorTicketDto,
   JobStatus,
   DriverStatus,
   VehicleState,
@@ -84,11 +82,6 @@ const DataEntryForm: React.FC = () => {
     endPoint: '',
     distance: 0,
     estimatedTime: '00:00:00'
-  });
-  
-  const [errorTicketForm, setErrorTicketForm] = useState<CreateErrorTicketDto>({
-    ticketName: '',
-    ticketDescription: ''
   });
 
   // Load related data for dropdowns
@@ -257,26 +250,6 @@ const DataEntryForm: React.FC = () => {
     }
   };
 
-  const handleErrorTicketSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
-    setSuccess(null);
-    
-    try {
-      await errorTicketApi.create(errorTicketForm);
-      setSuccess('Error ticket added successfully!');
-      setErrorTicketForm({
-        ticketName: '',
-        ticketDescription: ''
-      });
-    } catch (err) {
-      handleError(err, 'error ticket');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   const handleError = (err: any, entity: string) => {
     if (err instanceof ApiError) {
       if (err.status === 401) {
@@ -324,10 +297,6 @@ const DataEntryForm: React.FC = () => {
       endPoint: '',
       distance: 0,
       estimatedTime: '00:00:00'
-    });
-    setErrorTicketForm({
-      ticketName: '',
-      ticketDescription: ''
     });
     setError(null);
     setSuccess(null);
@@ -863,43 +832,6 @@ const DataEntryForm: React.FC = () => {
                 disabled={isSubmitting || !isAuthenticated}
               >
                 {isSubmitting ? 'Adding Route...' : 'Add Route'}
-              </Button>
-            </Form>
-          </Tab>
-
-          <Tab eventKey="error" title="Error Ticket">
-            <Form onSubmit={handleErrorTicketSubmit} className="mt-3">
-              <Form.Group className="mb-3">
-                <Form.Label>Ticket Name *</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={errorTicketForm.ticketName}
-                  onChange={(e) => setErrorTicketForm({...errorTicketForm, ticketName: e.target.value})}
-                  required
-                  disabled={isSubmitting || !isAuthenticated}
-                  placeholder="Brief description of the error"
-                />
-              </Form.Group>
-              
-              <Form.Group className="mb-3">
-                <Form.Label>Description *</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={4}
-                  value={errorTicketForm.ticketDescription}
-                  onChange={(e) => setErrorTicketForm({...errorTicketForm, ticketDescription: e.target.value})}
-                  required
-                  disabled={isSubmitting || !isAuthenticated}
-                  placeholder="Detailed description of the error..."
-                />
-              </Form.Group>
-              
-              <Button
-                variant="primary"
-                type="submit"
-                disabled={isSubmitting || !isAuthenticated}
-              >
-                {isSubmitting ? 'Adding Error Ticket...' : 'Add Error Ticket'}
               </Button>
             </Form>
           </Tab>

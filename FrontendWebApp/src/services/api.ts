@@ -50,6 +50,7 @@ const requiresAuth = (method: string = 'GET'): boolean => {
   return method !== 'GET';
 };
 
+// In the fetchApi function, update the response handling:
 async function fetchApi<T>(
   endpoint: string,
   options?: RequestInit
@@ -101,13 +102,32 @@ async function fetchApi<T>(
       throw new ApiError(response.status, errorMessage);
     }
 
-    // Handle 204 No Content
-    if (response.status === 204) {
+    // Handle 204 No Content - DELETE operations often return empty response
+    if (response.status === 204 || response.headers.get('content-length') === '0') {
+      // Return empty object for void operations
       return {} as T;
     }
 
-    const data = await response.json();
-    return data;
+    // Check if there's actually content to parse
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      try {
+        const data = await response.json();
+        return data;
+      } catch (jsonError) {
+        console.warn('Failed to parse JSON response:', jsonError);
+        // Return empty object if JSON parsing fails
+        return {} as T;
+      }
+    } else {
+      // For non-JSON responses, return text or empty
+      const text = await response.text();
+      // If there's text but not JSON, return it as a string
+      if (text) {
+        return text as unknown as T;
+      }
+      return {} as T;
+    }
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;

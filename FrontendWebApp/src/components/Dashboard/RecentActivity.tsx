@@ -12,7 +12,11 @@ interface ActivityItem {
   status: JobStatus | TransportStatus;
 }
 
-const RecentActivity: React.FC = () => {
+interface RecentActivityProps {
+  refreshTrigger?: number;
+}
+
+const RecentActivity: React.FC<RecentActivityProps> = ({ refreshTrigger = 0 }) => {
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -61,7 +65,7 @@ const RecentActivity: React.FC = () => {
     };
 
     fetchActivities();
-  }, []);
+  }, [refreshTrigger]);
 
   const getJobStatusBadge = (status: JobStatus) => {
     const statusMap: Record<JobStatus, { variant: string; label: string }> = {

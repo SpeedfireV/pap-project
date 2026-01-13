@@ -6,7 +6,11 @@ import { Job, Vehicle, Transport, JobStatus, VehicleType, VehicleState, Transpor
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
 
-const Charts: React.FC = () => {
+interface ChartsProps {
+  refreshTrigger?: number;
+}
+
+const Charts: React.FC<ChartsProps> = ({ refreshTrigger = 0 }) => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [transports, setTransports] = useState<Transport[]>([]);
@@ -32,7 +36,7 @@ const Charts: React.FC = () => {
     };
 
     fetchData();
-  }, []);
+  }, [refreshTrigger]);
 
   if (loading) {
     return (

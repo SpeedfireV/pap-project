@@ -11,54 +11,59 @@ interface StatsData {
   totalTransports: number;
 }
 
-const StatsCards: React.FC<{ onCardClick: (tabKey: string) => void }> = ({ onCardClick }) => {
+interface StatsCardsProps {
+  onCardClick: (tabKey: string) => void;
+  refreshTrigger?: number;
+}
+
+const StatsCards: React.FC<StatsCardsProps> = ({ onCardClick, refreshTrigger = 0 }) => {
   const [stats, setStats] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const fetchStats = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const [clients, jobs, drivers, vehicles, transports] = await Promise.all([
+        clientApi.getAll().catch(() => [] as Client[]),
+        jobApi.getAll().catch(() => [] as Job[]),
+        driverApi.getAll().catch(() => [] as Driver[]),
+        vehicleApi.getAll().catch(() => [] as Vehicle[]),
+        transportApi.getAll().catch(() => [] as Transport[]),
+      ]);
+
+      const activeJobs = jobs.filter(
+        (job) => job.status !== undefined
+      ).length;
+
+      const availableDrivers = drivers.filter(
+        (driver) => driver.status === 0 // Available
+      ).length;
+
+      const activeVehicles = vehicles.filter(
+        (vehicle) => vehicle.state === 0 || vehicle.state === 1 || vehicle.state === 2 // Operational, Assigned, InTransit
+      ).length;
+
+      setStats({
+        totalClients: clients.length,
+        activeJobs,
+        availableDrivers,
+        activeVehicles,
+        totalTransports: transports.length,
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load statistics');
+      console.error('Error fetching stats:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const [clients, jobs, drivers, vehicles, transports] = await Promise.all([
-          clientApi.getAll().catch(() => [] as Client[]),
-          jobApi.getAll().catch(() => [] as Job[]),
-          driverApi.getAll().catch(() => [] as Driver[]),
-          vehicleApi.getAll().catch(() => [] as Vehicle[]),
-          transportApi.getAll().catch(() => [] as Transport[]),
-        ]);
-
-        const activeJobs = jobs.filter(
-          (job) => job.status !== undefined
-        ).length;
-
-        const availableDrivers = drivers.filter(
-          (driver) => driver.status === 0 // Available
-        ).length;
-
-        const activeVehicles = vehicles.filter(
-          (vehicle) => vehicle.state === 0 || vehicle.state === 1 || vehicle.state === 2 // Operational, Assigned, InTransit
-        ).length;
-
-        setStats({
-          totalClients: clients.length,
-          activeJobs,
-          availableDrivers,
-          activeVehicles,
-          totalTransports: transports.length,
-        });
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load statistics');
-        console.error('Error fetching stats:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchStats();
-  }, []);
+  }, [refreshTrigger]);
 
   if (loading) {
     return (

@@ -13,12 +13,19 @@ import RecentActivity from "@/components/Dashboard/RecentActivity";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState('clients');
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   const dataTablesRef = useRef<HTMLDivElement>(null);
 
   const handleCardClick = (tabKey: string) => {
     setActiveTab(tabKey);
     dataTablesRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  // Function to trigger refresh of all components
+  const handleDataChange = () => {
+    setRefreshTrigger(prev => prev + 1);
+  };
+
   return (
     <>
         <Head>
@@ -34,22 +41,29 @@ export default function Home() {
           <h1 className="mb-4">Dashboard</h1>
 
           {/* Statistics Cards */}
-          <StatsCards onCardClick={handleCardClick} />
+          <StatsCards 
+            onCardClick={handleCardClick} 
+            refreshTrigger={refreshTrigger}
+          />
 
           {/* Charts and Recent Activity Row */}
           <Row className="g-4 mb-4">
             <Col xs={12} lg={8}>
-              <Charts />
+              <Charts refreshTrigger={refreshTrigger} />
             </Col>
             <Col xs={12} lg={4}>
-              <RecentActivity />
+              <RecentActivity refreshTrigger={refreshTrigger} />
             </Col>
           </Row>
 
           {/* Data Tables */}
           <div className="mb-4" ref={dataTablesRef}>
             <h2 className="mb-3">Data Management</h2>
-            <DataTables activeTab={activeTab} onTabChange={setActiveTab} />
+            <DataTables 
+              activeTab={activeTab} 
+              onTabChange={setActiveTab}
+              onDataChange={handleDataChange}
+            />
           </div>
 
           <Footer />

@@ -1,6 +1,6 @@
 import { Form, Button } from "react-bootstrap";
 import { useRef, FormEvent, useState } from "react";
-import { ErrorTicket, CreateErrorTicketDto } from "@/types/api";
+import { CreateErrorTicketDto } from "@/types/api";
 import { errorTicketApi, ApiError } from "@/services/api"
 
 const BugReportForm: React.FC = () => {

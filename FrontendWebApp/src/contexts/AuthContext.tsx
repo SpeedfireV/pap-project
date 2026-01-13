@@ -90,10 +90,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setUser(null);
     setToken(null);
     localStorage.removeItem('auth_token');
-    // Optional: Revoke Google token
-    if (window.google?.accounts?.id) {
-      window.google.accounts.id.revoke();
-    }
   };
 
   return (

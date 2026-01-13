@@ -1,12 +1,9 @@
 import Head from "next/head";
 import Container from "react-bootstrap/Container";
-import AppGuides from "@/components/AppGuides";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import BugReportForm from "@/components/BugReportForm";
 import ExampleOffcanvas from "@/components/ExampleOffcanvas";
-
-const CLIENT_ID = "436533053234-td33v9jq36mlrj6fkpq4sf2gpo73o284.apps.googleusercontent.com"
 
 export default function BugReport() {
   return (

@@ -5,7 +5,6 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import { GoogleOAuthProvider } from "@react-oauth/google";
 import ExampleOffcanvas from "@/components/ExampleOffcanvas";
 import StatsCards from "@/components/Dashboard/StatsCards";
 import Charts from "@/components/Dashboard/Charts";

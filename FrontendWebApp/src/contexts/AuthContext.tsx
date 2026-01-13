@@ -5,6 +5,7 @@ interface User {
   name: string;
   email: string;
   picture?: string;
+  sub?: string; // Google user ID
 }
 
 interface AuthContextType {
@@ -13,7 +14,7 @@ interface AuthContextType {
   login: (token: string) => void;
   logout: () => void;
   isAuthenticated: boolean;
-  isLoading: boolean; // Add loading state
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -29,55 +30,69 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true); // Track loading state
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Use useEffect to run client-side only
   useEffect(() => {
-    // Check localStorage on client-side only
-    const storedToken = localStorage.getItem('auth_token');
-    
-    if (storedToken) {
-      try {
-        const decoded = jwtDecode(storedToken) as any;
-        const userData: User = {
-          name: decoded.name || '',
-          email: decoded.email || '',
-          picture: decoded.picture,
-        };
-        
-        setUser(userData);
-        setToken(storedToken);
-      } catch (error) {
-        console.error('Failed to decode token:', error);
-        localStorage.removeItem('auth_token');
+    const initializeAuth = () => {
+      const storedToken = localStorage.getItem('auth_token');
+      
+      if (storedToken) {
+        try {
+          const decoded = jwtDecode(storedToken) as any;
+          const userData: User = {
+            name: decoded.name || '',
+            email: decoded.email || '',
+            picture: decoded.picture,
+            sub: decoded.sub,
+          };
+          
+          // Verify token is not expired
+          const currentTime = Date.now() / 1000;
+          if (decoded.exp && decoded.exp < currentTime) {
+            console.log('Token expired');
+            localStorage.removeItem('auth_token');
+          } else {
+            setUser(userData);
+            setToken(storedToken);
+          }
+        } catch (error) {
+          console.error('Failed to decode token:', error);
+          localStorage.removeItem('auth_token');
+        }
       }
-    }
-    
-    setIsLoading(false);
-  }, []); // Empty dependency array means run once on mount
+      
+      setIsLoading(false);
+    };
 
-  const login = (token: string) => {
-    // Check if we're on client-side
-    if (typeof window !== 'undefined') {
-      const decoded = jwtDecode(token) as any;
+    initializeAuth();
+  }, []);
+
+  const login = (newToken: string) => {
+    try {
+      const decoded = jwtDecode(newToken) as any;
       const userData: User = {
         name: decoded.name || '',
         email: decoded.email || '',
         picture: decoded.picture,
+        sub: decoded.sub,
       };
       
       setUser(userData);
-      setToken(token);
-      localStorage.setItem('auth_token', token);
+      setToken(newToken);
+      localStorage.setItem('auth_token', newToken);
+    } catch (error) {
+      console.error('Failed to decode token on login:', error);
+      throw new Error('Invalid token');
     }
   };
 
   const logout = () => {
-    // Check if we're on client-side
-    if (typeof window !== 'undefined') {
-      setUser(null);
-      setToken(null);
-      localStorage.removeItem('auth_token');
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem('auth_token');
+    // Optional: Revoke Google token
+    if (window.google?.accounts?.id) {
+      window.google.accounts.id.revoke();
     }
   };
 
@@ -87,7 +102,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       token,
       login,
       logout,
-      isAuthenticated: !!user,
+      isAuthenticated: !!user && !!token,
       isLoading,
     }}>
       {children}

@@ -27,24 +27,78 @@ class ApiError extends Error {
   }
 }
 
+// Helper to get auth token
+const getAuthToken = (): string | null => {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('auth_token');
+  }
+  return null;
+};
+
+// Helper to handle 401 errors
+const handleUnauthorized = () => {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('auth_token');
+    // Dispatch event that components can listen to
+    window.dispatchEvent(new Event('auth:unauthorized'));
+  }
+};
+
+// Helper to determine if a request requires auth
+const requiresAuth = (method: string = 'GET'): boolean => {
+  // GET requests don't require auth, others do
+  return method !== 'GET';
+};
+
 async function fetchApi<T>(
   endpoint: string,
   options?: RequestInit
 ): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
+  const method = options?.method || 'GET';
+  
+  // Prepare headers
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+
+  // Add Authorization header only for non-GET requests
+  if (requiresAuth(method)) {
+    const token = getAuthToken();
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    } else {
+      // For write operations without token, warn but still try
+      console.warn('No auth token found for write operation');
+    }
+  }
   
   try {
     const response = await fetch(url, {
       ...options,
       headers: {
-        'Content-Type': 'application/json',
+        ...headers,
         ...options?.headers,
       },
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new ApiError(response.status, errorText || `HTTP error! status: ${response.status}`);
+      // Handle 401 Unauthorized
+      if (response.status === 401) {
+        handleUnauthorized();
+        throw new ApiError(response.status, 'Unauthorized - Please log in again');
+      }
+      
+      // Handle other errors
+      let errorMessage: string;
+      try {
+        const errorText = await response.text();
+        errorMessage = errorText || `HTTP error! status: ${response.status}`;
+      } catch {
+        errorMessage = `HTTP error! status: ${response.status}`;
+      }
+      
+      throw new ApiError(response.status, errorMessage);
     }
 
     // Handle 204 No Content
@@ -156,9 +210,6 @@ export const statusHistoryApi = {
     fetchApi<StatusHistory[]>(`/api/StatusHistory/job/${jobId}`),
 };
 
-// Export error class for use in components
-export { ApiError };
-
 // Error API
 export const errorTicketApi = {
   getAll: (): Promise<ErrorTicket[]> => fetchApi<ErrorTicket[]>('/api/Error'),
@@ -171,3 +222,5 @@ export const errorTicketApi = {
   delete: (id: number): Promise<void> =>
     fetchApi<void>(`/api/Error/${id}`, { method: 'DELETE' }),
 };
+
+export { ApiError };

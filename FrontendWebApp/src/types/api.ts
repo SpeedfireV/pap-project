@@ -66,6 +66,7 @@ export interface StatusHistory {
 }
 
 export interface ErrorTicket {
+  id: number;
   name: string;
   description: string;
   ticketDate: string; // DateTime serialized as string
@@ -186,7 +187,6 @@ export interface UpdateTransportDto {
 }
 
 export interface CreateErrorTicketDto {
-  name: string;
-  description: string;
-  ticketDate: string;
+  ticketName: string;
+  ticketDescription: string;
 }

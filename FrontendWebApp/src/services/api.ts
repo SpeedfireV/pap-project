@@ -161,13 +161,13 @@ export { ApiError };
 
 // Error API
 export const errorTicketApi = {
-  getAll: (): Promise<ErrorTicket[]> => fetchApi<ErrorTicket[]>('/api/ErrorTicket'),
-  getById: (id: number): Promise<ErrorTicket> => fetchApi<ErrorTicket>(`/api/ErrorTicket/${id}`),
+  getAll: (): Promise<ErrorTicket[]> => fetchApi<ErrorTicket[]>('/api/Error'),
+  getById: (id: number): Promise<ErrorTicket> => fetchApi<ErrorTicket>(`/api/Error/${id}`),
   create: (dto: CreateErrorTicketDto): Promise<ErrorTicket> =>
-    fetchApi<ErrorTicket>('/api/ErrorTicket', {
+    fetchApi<ErrorTicket>('/api/Error', {
       method: 'POST',
       body: JSON.stringify(dto),
     }),
   delete: (id: number): Promise<void> =>
-    fetchApi<void>(`/api/ErrorTicket/${id}`, { method: 'DELETE' }),
+    fetchApi<void>(`/api/Error/${id}`, { method: 'DELETE' }),
 };

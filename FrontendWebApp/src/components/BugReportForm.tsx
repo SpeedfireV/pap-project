@@ -1,19 +1,19 @@
 import { Form, Button } from "react-bootstrap";
 import { useRef, FormEvent, useState } from "react";
-
-interface BugReportData {
-  name: string;
-  description: string;
-  ticketDate: string;
-}
+import { ErrorTicket, CreateErrorTicketDto } from "@/types/api";
+import { errorTicketApi, ApiError } from "@/services/api"
 
 const BugReportForm: React.FC = () => {
   const nameRef = useRef<HTMLTextAreaElement>(null);
   const descRef = useRef<HTMLTextAreaElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    setError(null);
+    setSuccess(false);
     
     if (!nameRef.current?.value.trim() || !descRef.current?.value.trim()) {
       alert("Please fill in all required fields");
@@ -23,33 +23,35 @@ const BugReportForm: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      const bugReport: BugReportData = {
-        name: nameRef.current.value,
-        description: descRef.current.value,
-        ticketDate: new Date().toISOString(),
+      const bugReport: CreateErrorTicketDto = {
+        ticketName: nameRef.current.value.trim(),
+        ticketDescription: descRef.current.value.trim(),
       };
 
-      const response = await fetch('/api/ErrorTicket', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(bugReport),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      // Use the centralized API service
+      await errorTicketApi.create(bugReport);
 
       // Clear form on successful submission
       nameRef.current.value = '';
       descRef.current.value = '';
+      setSuccess(true);
       
-      alert("Bug report submitted successfully!");
+      // Auto-hide success message after 5 seconds
+      setTimeout(() => setSuccess(false), 5000);
       
-    } catch (error) {
-      console.error("Error submitting bug report:", error);
-      alert("Failed to submit bug report. Please try again.");
+    } catch (err) {
+      console.error("Error submitting bug report:", err);
+      
+      if (err instanceof ApiError) {
+        // Handle API-specific errors
+        setError(`API Error (${err.status}): ${err.message}`);
+      } else if (err instanceof Error) {
+        // Handle general errors
+        setError(`Error: ${err.message}`);
+      } else {
+        // Handle unknown errors
+        setError("An unexpected error occurred. Please try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }

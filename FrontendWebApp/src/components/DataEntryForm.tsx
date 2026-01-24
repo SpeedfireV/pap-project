@@ -1,5 +1,6 @@
 import { Form, Button, Alert, Card, Tabs, Tab, Row, Col } from "react-bootstrap";
-import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent, useEffect, useCallback } from "react";
+import Select from 'react-select';
 import { useAuth } from '../contexts/AuthContext';
 import {
   clientApi,
@@ -23,6 +24,37 @@ import {
   VehicleType,
   TransportStatus
 } from '@/types/api';
+
+// Define TypeScript types for react-select options
+interface SelectOption {
+  value: number;
+  label: string;
+}
+
+// Custom styles for react-select to match Bootstrap
+const customSelectStyles = {
+  control: (provided: any, state: any) => ({
+    ...provided,
+    borderColor: state.isFocused ? '#86b7fe' : '#ced4da',
+    boxShadow: state.isFocused ? '0 0 0 0.25rem rgba(13, 110, 253, 0.25)' : 'none',
+    '&:hover': {
+      borderColor: state.isFocused ? '#86b7fe' : '#adb5bd',
+    },
+    minHeight: '38px',
+  }),
+  menu: (provided: any) => ({
+    ...provided,
+    zIndex: 9999,
+  }),
+  option: (provided: any, state: any) => ({
+    ...provided,
+    backgroundColor: state.isSelected ? '#0d6efd' : state.isFocused ? '#f8f9fa' : 'white',
+    color: state.isSelected ? 'white' : '#212529',
+    '&:active': {
+      backgroundColor: state.isSelected ? '#0d6efd' : '#e9ecef',
+    },
+  }),
+};
 
 const DataEntryForm: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -48,7 +80,7 @@ const DataEntryForm: React.FC = () => {
   
   const [jobForm, setJobForm] = useState<CreateJobDto>({
     clientId: 0,
-    date: new Date().toISOString().split('T')[0], // Today's date as YYYY-MM-DD
+    date: new Date().toISOString().split('T')[0],
     status: JobStatus.Normal,
     remarks: ''
   });
@@ -85,6 +117,73 @@ const DataEntryForm: React.FC = () => {
     distance: 0,
     estimatedTime: '00:00:00'
   });
+
+  // Convert data to react-select options
+  const clientOptions: SelectOption[] = clients.map(client => ({
+    value: client.clientId,
+    label: `${client.name} (NIP: ${client.nip})`
+  }));
+
+  const jobOptions: SelectOption[] = jobs.map(job => ({
+    value: job.jobId,
+    label: `Job #${job.jobId} - ${job.client?.name || 'Unknown Client'} - ${job.date}`
+  }));
+
+  const driverOptions: SelectOption[] = drivers.map(driver => ({
+    value: driver.driverId,
+    label: `${driver.name} ${driver.surname} (${DriverStatus[driver.status] || 'Unknown'})`
+  }));
+
+  const vehicleOptions: SelectOption[] = vehicles.map(vehicle => ({
+    value: vehicle.vehicleId,
+    label: `${vehicle.licensePlate} - ${VehicleType[vehicle.type] || 'Unknown'} (${VehicleState[vehicle.state] || 'Unknown'})`
+  }));
+
+  const transportOptions: SelectOption[] = transports.map(transport => ({
+    value: transport.transportId,
+    label: `Transport #${transport.transportId} - Job: ${transport.jobId} - ${transport.vehicle?.licensePlate || 'No Vehicle'}`
+  }));
+
+  // Status enum options
+  const jobStatusOptions: SelectOption[] = Object.entries(JobStatus)
+    .filter(([key]) => isNaN(Number(key)))
+    .map(([key, value]) => ({
+      value: value as number,
+      label: key
+    }));
+
+  const driverStatusOptions: SelectOption[] = Object.entries(DriverStatus)
+    .filter(([key]) => isNaN(Number(key)))
+    .map(([key, value]) => ({
+      value: value as number,
+      label: key
+    }));
+
+  const vehicleTypeOptions: SelectOption[] = Object.entries(VehicleType)
+    .filter(([key]) => isNaN(Number(key)))
+    .map(([key, value]) => ({
+      value: value as number,
+      label: key
+    }));
+
+  const vehicleStateOptions: SelectOption[] = Object.entries(VehicleState)
+    .filter(([key]) => isNaN(Number(key)))
+    .map(([key, value]) => ({
+      value: value as number,
+      label: key
+    }));
+
+  const transportStatusOptions: SelectOption[] = Object.entries(TransportStatus)
+    .filter(([key]) => isNaN(Number(key)))
+    .map(([key, value]) => ({
+      value: value as number,
+      label: key
+    }));
+
+  // Filter functions for searchable dropdowns
+  const filterOption = useCallback((option: any, inputValue: string) => {
+    return option.label.toLowerCase().includes(inputValue.toLowerCase());
+  }, []);
 
   // Load related data for dropdowns
   useEffect(() => {
@@ -384,12 +483,12 @@ const DataEntryForm: React.FC = () => {
               <Form.Group className="mb-3">
                 <Form.Label>Phone *</Form.Label>
                 <Form.Control
-                  type="number"
-                  value={clientForm.phone || ''}
-                  onChange={(e) => setClientForm({...clientForm, phone: parseInt(e.target.value) || 0})}
-                  required
-                  disabled={isSubmitting || !isAuthenticated}
-                />
+                      type="number"
+                      value={clientForm.phone || ''}
+                      onChange={(e) => setClientForm({...clientForm, phone: parseInt(e.target.value) || 0})}
+                      required
+                      disabled={isSubmitting || !isAuthenticated}
+                    />
               </Form.Group>
               
               <Button
@@ -406,19 +505,18 @@ const DataEntryForm: React.FC = () => {
             <Form onSubmit={handleJobSubmit} className="mt-3">
               <Form.Group className="mb-3">
                 <Form.Label>Client *</Form.Label>
-                <Form.Select
-                  value={jobForm.clientId}
-                  onChange={(e) => setJobForm({...jobForm, clientId: parseInt(e.target.value)})}
-                  required
-                  disabled={isSubmitting || !isAuthenticated || clients.length === 0}
-                >
-                  <option value={0}>Select a client</option>
-                  {clients.map(client => (
-                    <option key={client.clientId} value={client.clientId}>
-                      {client.name} (NIP: {client.nip})
-                    </option>
-                  ))}
-                </Form.Select>
+                <Select
+                  options={clientOptions}
+                  value={clientOptions.find(opt => opt.value === jobForm.clientId)}
+                  onChange={(selected) => setJobForm({...jobForm, clientId: selected?.value || 0})}
+                  filterOption={filterOption}
+                  isSearchable
+                  isClearable
+                  placeholder="Select a client..."
+                  isDisabled={isSubmitting || !isAuthenticated || clients.length === 0}
+                  styles={customSelectStyles}
+                  noOptionsMessage={() => "No clients found"}
+                />
                 {clients.length === 0 && (
                   <Form.Text className="text-warning">
                     No clients available. Please add a client first.
@@ -442,20 +540,16 @@ const DataEntryForm: React.FC = () => {
                 <Col md={6}>
                   <Form.Group className="mb-3">
                     <Form.Label>Status *</Form.Label>
-                    <Form.Select
-                      value={jobForm.status}
-                      onChange={(e) => setJobForm({...jobForm, status: parseInt(e.target.value)})}
-                      required
-                      disabled={isSubmitting || !isAuthenticated}
-                    >
-                      {Object.entries(JobStatus)
-                        .filter(([key]) => isNaN(Number(key)))
-                        .map(([key, value]) => (
-                          <option key={key} value={value}>
-                            {key}
-                          </option>
-                        ))}
-                    </Form.Select>
+                    <Select
+                      options={jobStatusOptions}
+                      value={jobStatusOptions.find(opt => opt.value === jobForm.status)}
+                      onChange={(selected) => setJobForm({...jobForm, status: selected?.value || JobStatus.Normal})}
+                      isSearchable
+                      isClearable
+                      placeholder="Select status..."
+                      isDisabled={isSubmitting || !isAuthenticated}
+                      styles={customSelectStyles}
+                    />
                   </Form.Group>
                 </Col>
               </Row>
@@ -539,20 +633,16 @@ const DataEntryForm: React.FC = () => {
               
               <Form.Group className="mb-3">
                 <Form.Label>Status *</Form.Label>
-                <Form.Select
-                  value={driverForm.status}
-                  onChange={(e) => setDriverForm({...driverForm, status: parseInt(e.target.value)})}
-                  required
-                  disabled={isSubmitting || !isAuthenticated}
-                >
-                  {Object.entries(DriverStatus)
-                    .filter(([key]) => isNaN(Number(key)))
-                    .map(([key, value]) => (
-                      <option key={key} value={value}>
-                        {key}
-                      </option>
-                    ))}
-                </Form.Select>
+                <Select
+                  options={driverStatusOptions}
+                  value={driverStatusOptions.find(opt => opt.value === driverForm.status)}
+                  onChange={(selected) => setDriverForm({...driverForm, status: selected?.value || DriverStatus.Available})}
+                  isSearchable
+                  isClearable
+                  placeholder="Select status..."
+                  isDisabled={isSubmitting || !isAuthenticated}
+                  styles={customSelectStyles}
+                />
               </Form.Group>
               
               <Button
@@ -583,20 +673,16 @@ const DataEntryForm: React.FC = () => {
                 <Col md={6}>
                   <Form.Group className="mb-3">
                     <Form.Label>Vehicle Type *</Form.Label>
-                    <Form.Select
-                      value={vehicleForm.type}
-                      onChange={(e) => setVehicleForm({...vehicleForm, type: parseInt(e.target.value)})}
-                      required
-                      disabled={isSubmitting || !isAuthenticated}
-                    >
-                      {Object.entries(VehicleType)
-                        .filter(([key]) => isNaN(Number(key)))
-                        .map(([key, value]) => (
-                          <option key={key} value={value}>
-                            {key}
-                          </option>
-                        ))}
-                    </Form.Select>
+                    <Select
+                      options={vehicleTypeOptions}
+                      value={vehicleTypeOptions.find(opt => opt.value === vehicleForm.type)}
+                      onChange={(selected) => setVehicleForm({...vehicleForm, type: selected?.value || VehicleType.Van})}
+                      isSearchable
+                      isClearable
+                      placeholder="Select vehicle type..."
+                      isDisabled={isSubmitting || !isAuthenticated}
+                      styles={customSelectStyles}
+                    />
                   </Form.Group>
                 </Col>
                 <Col md={6}>
@@ -615,20 +701,16 @@ const DataEntryForm: React.FC = () => {
               
               <Form.Group className="mb-3">
                 <Form.Label>State *</Form.Label>
-                <Form.Select
-                  value={vehicleForm.state}
-                  onChange={(e) => setVehicleForm({...vehicleForm, state: parseInt(e.target.value)})}
-                  required
-                  disabled={isSubmitting || !isAuthenticated}
-                >
-                  {Object.entries(VehicleState)
-                    .filter(([key]) => isNaN(Number(key)))
-                    .map(([key, value]) => (
-                      <option key={key} value={value}>
-                        {key}
-                      </option>
-                    ))}
-                </Form.Select>
+                <Select
+                  options={vehicleStateOptions}
+                  value={vehicleStateOptions.find(opt => opt.value === vehicleForm.state)}
+                  onChange={(selected) => setVehicleForm({...vehicleForm, state: selected?.value || VehicleState.Operational})}
+                  isSearchable
+                  isClearable
+                  placeholder="Select vehicle state..."
+                  isDisabled={isSubmitting || !isAuthenticated}
+                  styles={customSelectStyles}
+                />
               </Form.Group>
               
               <Button
@@ -647,55 +729,52 @@ const DataEntryForm: React.FC = () => {
                 <Col md={4}>
                   <Form.Group className="mb-3">
                     <Form.Label>Job *</Form.Label>
-                    <Form.Select
-                      value={transportForm.jobId}
-                      onChange={(e) => setTransportForm({...transportForm, jobId: parseInt(e.target.value)})}
-                      required
-                      disabled={isSubmitting || !isAuthenticated || jobs.length === 0}
-                    >
-                      <option value={0}>Select a job</option>
-                      {jobs.map(job => (
-                        <option key={job.jobId} value={job.jobId}>
-                          Job #{job.jobId} - {job.client?.name || 'Unknown Client'}
-                        </option>
-                      ))}
-                    </Form.Select>
+                    <Select
+                      options={jobOptions}
+                      value={jobOptions.find(opt => opt.value === transportForm.jobId)}
+                      onChange={(selected) => setTransportForm({...transportForm, jobId: selected?.value || 0})}
+                      filterOption={filterOption}
+                      isSearchable
+                      isClearable
+                      placeholder="Select a job..."
+                      isDisabled={isSubmitting || !isAuthenticated || jobs.length === 0}
+                      styles={customSelectStyles}
+                      noOptionsMessage={() => "No jobs found"}
+                    />
                   </Form.Group>
                 </Col>
                 <Col md={4}>
                   <Form.Group className="mb-3">
                     <Form.Label>Vehicle *</Form.Label>
-                    <Form.Select
-                      value={transportForm.vehicleId}
-                      onChange={(e) => setTransportForm({...transportForm, vehicleId: parseInt(e.target.value)})}
-                      required
-                      disabled={isSubmitting || !isAuthenticated || vehicles.length === 0}
-                    >
-                      <option value={0}>Select a vehicle</option>
-                      {vehicles.map(vehicle => (
-                        <option key={vehicle.vehicleId} value={vehicle.vehicleId}>
-                          {vehicle.licensePlate} ({VehicleType[vehicle.type]})
-                        </option>
-                      ))}
-                    </Form.Select>
+                    <Select
+                      options={vehicleOptions}
+                      value={vehicleOptions.find(opt => opt.value === transportForm.vehicleId)}
+                      onChange={(selected) => setTransportForm({...transportForm, vehicleId: selected?.value || 0})}
+                      filterOption={filterOption}
+                      isSearchable
+                      isClearable
+                      placeholder="Select a vehicle..."
+                      isDisabled={isSubmitting || !isAuthenticated || vehicles.length === 0}
+                      styles={customSelectStyles}
+                      noOptionsMessage={() => "No vehicles found"}
+                    />
                   </Form.Group>
                 </Col>
                 <Col md={4}>
                   <Form.Group className="mb-3">
                     <Form.Label>Driver *</Form.Label>
-                    <Form.Select
-                      value={transportForm.driverId}
-                      onChange={(e) => setTransportForm({...transportForm, driverId: parseInt(e.target.value)})}
-                      required
-                      disabled={isSubmitting || !isAuthenticated || drivers.length === 0}
-                    >
-                      <option value={0}>Select a driver</option>
-                      {drivers.map(driver => (
-                        <option key={driver.driverId} value={driver.driverId}>
-                          {driver.name} {driver.surname}
-                        </option>
-                      ))}
-                    </Form.Select>
+                    <Select
+                      options={driverOptions}
+                      value={driverOptions.find(opt => opt.value === transportForm.driverId)}
+                      onChange={(selected) => setTransportForm({...transportForm, driverId: selected?.value || 0})}
+                      filterOption={filterOption}
+                      isSearchable
+                      isClearable
+                      placeholder="Select a driver..."
+                      isDisabled={isSubmitting || !isAuthenticated || drivers.length === 0}
+                      styles={customSelectStyles}
+                      noOptionsMessage={() => "No drivers found"}
+                    />
                   </Form.Group>
                 </Col>
               </Row>
@@ -743,20 +822,16 @@ const DataEntryForm: React.FC = () => {
                 <Col md={6}>
                   <Form.Group className="mb-3">
                     <Form.Label>Status *</Form.Label>
-                    <Form.Select
-                      value={transportForm.status}
-                      onChange={(e) => setTransportForm({...transportForm, status: parseInt(e.target.value)})}
-                      required
-                      disabled={isSubmitting || !isAuthenticated}
-                    >
-                      {Object.entries(TransportStatus)
-                        .filter(([key]) => isNaN(Number(key)))
-                        .map(([key, value]) => (
-                          <option key={key} value={value}>
-                            {key}
-                          </option>
-                        ))}
-                    </Form.Select>
+                    <Select
+                      options={transportStatusOptions}
+                      value={transportStatusOptions.find(opt => opt.value === transportForm.status)}
+                      onChange={(selected) => setTransportForm({...transportForm, status: selected?.value || TransportStatus.BookingConfirmed})}
+                      isSearchable
+                      isClearable
+                      placeholder="Select transport status..."
+                      isDisabled={isSubmitting || !isAuthenticated}
+                      styles={customSelectStyles}
+                    />
                   </Form.Group>
                 </Col>
               </Row>
@@ -775,21 +850,18 @@ const DataEntryForm: React.FC = () => {
             <Form onSubmit={handleRouteSubmit} className="mt-3">
               <Form.Group className="mb-3">
                 <Form.Label>Transport *</Form.Label>
-                <Form.Select
-                  value={routeForm.transportId}
-                  onChange={(e) => setRouteForm({...routeForm, transportId: parseInt(e.target.value)})}
-                  required
-                  disabled={isSubmitting || !isAuthenticated || transports.length === 0}
-                >
-                  <option value={0}>Select a transport</option>
-                  {transports.map(transport => (
-                    <option key={transport.transportId} value={transport.transportId}>
-                      Transport #{transport.transportId} 
-                      {transport.job && ` (Job: ${transport.job.jobId})`}
-                      {transport.vehicle && ` - ${transport.vehicle.licensePlate}`}
-                    </option>
-                  ))}
-                </Form.Select>
+                <Select
+                  options={transportOptions}
+                  value={transportOptions.find(opt => opt.value === routeForm.transportId)}
+                  onChange={(selected) => setRouteForm({...routeForm, transportId: selected?.value || 0})}
+                  filterOption={filterOption}
+                  isSearchable
+                  isClearable
+                  placeholder="Select a transport..."
+                  isDisabled={isSubmitting || !isAuthenticated || transports.length === 0}
+                  styles={customSelectStyles}
+                  noOptionsMessage={() => "No transports found"}
+                />
                 {transports.length === 0 && (
                   <Form.Text className="text-warning">
                     No transports available. Please add a transport first.

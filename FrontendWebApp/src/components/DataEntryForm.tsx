@@ -36,6 +36,7 @@ const DataEntryForm: React.FC = () => {
   const [drivers, setDrivers] = useState<any[]>([]);
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [jobs, setJobs] = useState<any[]>([]);
+  const [transports, setTransports] = useState<any[]>([]);
   
   // Form states
   const [clientForm, setClientForm] = useState<CreateClientDto>({
@@ -78,6 +79,7 @@ const DataEntryForm: React.FC = () => {
   });
   
   const [routeForm, setRouteForm] = useState<CreateRouteDto>({
+    transportId: 0,
     startPoint: '',
     endPoint: '',
     distance: 0,
@@ -88,17 +90,19 @@ const DataEntryForm: React.FC = () => {
   useEffect(() => {
     const loadRelatedData = async () => {
       try {
-        const [clientsData, driversData, vehiclesData, jobsData] = await Promise.all([
+        const [clientsData, driversData, vehiclesData, jobsData, transportsData] = await Promise.all([
           clientApi.getAll(),
           driverApi.getAll(),
           vehicleApi.getAll(),
-          jobApi.getAll()
+          jobApi.getAll(),
+          transportApi.getAll()
         ]);
         
         setClients(clientsData);
         setDrivers(driversData);
         setVehicles(vehiclesData);
         setJobs(jobsData);
+        setTransports(transportsData);
       } catch (err) {
         console.error('Failed to load related data:', err);
       }
@@ -210,7 +214,7 @@ const DataEntryForm: React.FC = () => {
     setSuccess(null);
     
     try {
-      await transportApi.create(transportForm);
+      const newTransport = await transportApi.create(transportForm);
       setSuccess('Transport added successfully!');
       setTransportForm({
         jobId: 0,
@@ -221,6 +225,8 @@ const DataEntryForm: React.FC = () => {
         cargoMass: 0,
         status: TransportStatus.BookingConfirmed
       });
+      const updatedTransports = await transportApi.getAll();
+      setTransports(updatedTransports);
     } catch (err) {
       handleError(err, 'transport');
     } finally {
@@ -238,6 +244,7 @@ const DataEntryForm: React.FC = () => {
       await routeApi.create(routeForm);
       setSuccess('Route added successfully!');
       setRouteForm({
+        transportId: 0,
         startPoint: '',
         endPoint: '',
         distance: 0,
@@ -293,6 +300,7 @@ const DataEntryForm: React.FC = () => {
       status: TransportStatus.BookingConfirmed
     });
     setRouteForm({
+      transportId: 0,
       startPoint: '',
       endPoint: '',
       distance: 0,
@@ -765,6 +773,30 @@ const DataEntryForm: React.FC = () => {
 
           <Tab eventKey="route" title="Route">
             <Form onSubmit={handleRouteSubmit} className="mt-3">
+              <Form.Group className="mb-3">
+                <Form.Label>Transport *</Form.Label>
+                <Form.Select
+                  value={routeForm.transportId}
+                  onChange={(e) => setRouteForm({...routeForm, transportId: parseInt(e.target.value)})}
+                  required
+                  disabled={isSubmitting || !isAuthenticated || transports.length === 0}
+                >
+                  <option value={0}>Select a transport</option>
+                  {transports.map(transport => (
+                    <option key={transport.transportId} value={transport.transportId}>
+                      Transport #{transport.transportId} 
+                      {transport.job && ` (Job: ${transport.job.jobId})`}
+                      {transport.vehicle && ` - ${transport.vehicle.licensePlate}`}
+                    </option>
+                  ))}
+                </Form.Select>
+                {transports.length === 0 && (
+                  <Form.Text className="text-warning">
+                    No transports available. Please add a transport first.
+                  </Form.Text>
+                )}
+              </Form.Group>
+              
               <Row>
                 <Col md={6}>
                   <Form.Group className="mb-3">
@@ -829,7 +861,7 @@ const DataEntryForm: React.FC = () => {
               <Button
                 variant="primary"
                 type="submit"
-                disabled={isSubmitting || !isAuthenticated}
+                disabled={isSubmitting || !isAuthenticated || transports.length === 0}
               >
                 {isSubmitting ? 'Adding Route...' : 'Add Route'}
               </Button>

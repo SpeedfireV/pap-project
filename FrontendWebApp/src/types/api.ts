@@ -170,6 +170,7 @@ export interface CreateTransportDto {
 }
 
 export interface CreateRouteDto {
+  transportId: number;
   startPoint: string;
   endPoint: string;
   distance: number;

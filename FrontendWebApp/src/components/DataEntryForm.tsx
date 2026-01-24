@@ -1,5 +1,5 @@
 import { Form, Button, Alert, Card, Tabs, Tab, Row, Col } from "react-bootstrap";
-import { useState, FormEvent, useEffect, useCallback } from "react";
+import { useState, FormEvent, useEffect, useMemo } from "react";
 import Select from 'react-select';
 import { useAuth } from '../contexts/AuthContext';
 import {
@@ -70,6 +70,39 @@ const DataEntryForm: React.FC = () => {
   const [jobs, setJobs] = useState<any[]>([]);
   const [transports, setTransports] = useState<any[]>([]);
   
+  // Create a map of clients for quick lookup
+  const clientMap = useMemo(() => {
+    const map: Record<number, string> = {};
+    clients.forEach(client => {
+      map[client.clientId] = client.name;
+    });
+    return map;
+  }, [clients]);
+
+  // Create a map of vehicles for quick lookup
+  const vehicleMap = useMemo(() => {
+    const map: Record<number, { licensePlate: string; type: string }> = {};
+    vehicles.forEach(vehicle => {
+      map[vehicle.vehicleId] = {
+        licensePlate: vehicle.licensePlate,
+        type: VehicleType[vehicle.type] || 'Unknown'
+      };
+    });
+    return map;
+  }, [vehicles]);
+
+  // Create a map of drivers for quick lookup
+  const driverMap = useMemo(() => {
+    const map: Record<number, { name: string; surname: string }> = {};
+    drivers.forEach(driver => {
+      map[driver.driverId] = {
+        name: driver.name,
+        surname: driver.surname
+      };
+    });
+    return map;
+  }, [drivers]);
+
   // Form states
   const [clientForm, setClientForm] = useState<CreateClientDto>({
     name: '',
@@ -124,10 +157,13 @@ const DataEntryForm: React.FC = () => {
     label: `${client.name} (NIP: ${client.nip})`
   }));
 
-  const jobOptions: SelectOption[] = jobs.map(job => ({
-    value: job.jobId,
-    label: `Job #${job.jobId} - ${job.client?.name || 'Unknown Client'} - ${job.date}`
-  }));
+  const jobOptions: SelectOption[] = jobs.map(job => {
+    const clientName = clientMap[job.clientId] || 'Unknown Client';
+    return {
+      value: job.jobId,
+      label: `Job #${job.jobId} - ${clientName} - ${job.startDate}`
+    };
+  });
 
   const driverOptions: SelectOption[] = drivers.map(driver => ({
     value: driver.driverId,
@@ -139,10 +175,14 @@ const DataEntryForm: React.FC = () => {
     label: `${vehicle.licensePlate} - ${VehicleType[vehicle.type] || 'Unknown'} (${VehicleState[vehicle.state] || 'Unknown'})`
   }));
 
-  const transportOptions: SelectOption[] = transports.map(transport => ({
-    value: transport.transportId,
-    label: `Transport #${transport.transportId} - Job: ${transport.jobId} - ${transport.vehicle?.licensePlate || 'No Vehicle'}`
-  }));
+  const transportOptions: SelectOption[] = transports.map(transport => {
+    const vehicleInfo = vehicleMap[transport.vehicleId];
+    const vehicleLabel = vehicleInfo ? vehicleInfo.licensePlate : 'No Vehicle';
+    return {
+      value: transport.transportId,
+      label: `Transport #${transport.transportId} - Job: ${transport.jobId} - ${vehicleLabel}`
+    };
+  });
 
   // Status enum options
   const jobStatusOptions: SelectOption[] = Object.entries(JobStatus)
@@ -181,9 +221,9 @@ const DataEntryForm: React.FC = () => {
     }));
 
   // Filter functions for searchable dropdowns
-  const filterOption = useCallback((option: any, inputValue: string) => {
+  const filterOption = (option: any, inputValue: string) => {
     return option.label.toLowerCase().includes(inputValue.toLowerCase());
-  }, []);
+  };
 
   // Load related data for dropdowns
   useEffect(() => {
@@ -741,6 +781,11 @@ const DataEntryForm: React.FC = () => {
                       styles={customSelectStyles}
                       noOptionsMessage={() => "No jobs found"}
                     />
+                    {jobs.length === 0 && (
+                      <Form.Text className="text-warning">
+                        No jobs available. Please add a job first.
+                      </Form.Text>
+                    )}
                   </Form.Group>
                 </Col>
                 <Col md={4}>
@@ -758,6 +803,11 @@ const DataEntryForm: React.FC = () => {
                       styles={customSelectStyles}
                       noOptionsMessage={() => "No vehicles found"}
                     />
+                    {vehicles.length === 0 && (
+                      <Form.Text className="text-warning">
+                        No vehicles available. Please add a vehicle first.
+                      </Form.Text>
+                    )}
                   </Form.Group>
                 </Col>
                 <Col md={4}>
@@ -775,6 +825,11 @@ const DataEntryForm: React.FC = () => {
                       styles={customSelectStyles}
                       noOptionsMessage={() => "No drivers found"}
                     />
+                    {drivers.length === 0 && (
+                      <Form.Text className="text-warning">
+                        No drivers available. Please add a driver first.
+                      </Form.Text>
+                    )}
                   </Form.Group>
                 </Col>
               </Row>

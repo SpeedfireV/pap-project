@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Moq;
 using WebApplication1;
 using WebApplication1.Controllers;
 
@@ -7,12 +9,14 @@ namespace SpeditionAppTests.Tests;
 
 public class MaintenanceLogControllerTests
 {
+    private readonly Mock<ILogger<MaintenanceLogController>> _loggerMock = new();
+    
     private DatabaseContext GetDatabaseContext()
     {
         var options = new DbContextOptionsBuilder<DatabaseContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
-
+        
         var databaseContext = new DatabaseContext(options);
         databaseContext.Database.EnsureCreated();
         return databaseContext;
@@ -27,7 +31,7 @@ public class MaintenanceLogControllerTests
         context.MaintenanceLogs.Add(new MaintenanceLog { MaintenanceId = 2, Description = "Tire Rotation", ServiceType = "Tires" });
         await context.SaveChangesAsync();
 
-        var controller = new MaintenanceLogController(context);
+        var controller = new MaintenanceLogController(context, _loggerMock.Object);
 
         var result = await controller.GetLogs();
 
@@ -40,7 +44,7 @@ public class MaintenanceLogControllerTests
     public async Task CreateLog_AddsLogToDatabase()
     {
         var context = GetDatabaseContext();
-        var controller = new MaintenanceLogController(context);
+        var controller = new MaintenanceLogController(context, _loggerMock.Object);
         // Dodano ServiceType
         var newLog = new MaintenanceLog 
         { 
@@ -95,7 +99,7 @@ public class MaintenanceLogControllerTests
         });
         await context.SaveChangesAsync();
 
-        var controller = new MaintenanceLogController(context);
+        var controller = new MaintenanceLogController(context, _loggerMock.Object);
         var result = await controller.GetLogsByVehicle(targetVehicleId);
 
         var logs = Assert.IsType<List<MaintenanceLog>>(result.Value);

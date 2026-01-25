@@ -5695,24 +5695,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\grzeg\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\wojte\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\grzeg\\Desktop\\STUDIA\\PAP\\pap-project\\WebApplication1\\SpeditionAppTests\\SpeditionAppTests.csproj",
+      "projectUniqueName": "C:\\Users\\wojte\\RiderProjects\\pap-project\\WebApplication1\\SpeditionAppTests\\SpeditionAppTests.csproj",
       "projectName": "SpeditionAppTests",
-      "projectPath": "C:\\Users\\grzeg\\Desktop\\STUDIA\\PAP\\pap-project\\WebApplication1\\SpeditionAppTests\\SpeditionAppTests.csproj",
-      "packagesPath": "C:\\Users\\grzeg\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\grzeg\\Desktop\\STUDIA\\PAP\\pap-project\\WebApplication1\\SpeditionAppTests\\obj\\",
+      "projectPath": "C:\\Users\\wojte\\RiderProjects\\pap-project\\WebApplication1\\SpeditionAppTests\\SpeditionAppTests.csproj",
+      "packagesPath": "C:\\Users\\wojte\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\wojte\\RiderProjects\\pap-project\\WebApplication1\\SpeditionAppTests\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\grzeg\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config"
+        "C:\\Users\\wojte\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net9.0"
@@ -5724,8 +5719,8 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "projectReferences": {
-            "C:\\Users\\grzeg\\Desktop\\STUDIA\\PAP\\pap-project\\WebApplication1\\SpeditionApp\\SpeditionApp.csproj": {
-              "projectPath": "C:\\Users\\grzeg\\Desktop\\STUDIA\\PAP\\pap-project\\WebApplication1\\SpeditionApp\\SpeditionApp.csproj"
+            "C:\\Users\\wojte\\RiderProjects\\pap-project\\WebApplication1\\SpeditionApp\\SpeditionApp.csproj": {
+              "projectPath": "C:\\Users\\wojte\\RiderProjects\\pap-project\\WebApplication1\\SpeditionApp\\SpeditionApp.csproj"
             }
           }
         }
@@ -5740,7 +5735,7 @@
         "auditLevel": "low",
         "auditMode": "direct"
       },
-      "SdkAnalysisLevel": "9.0.300"
+      "SdkAnalysisLevel": "10.0.100"
     },
     "frameworks": {
       "net9.0": {
@@ -5782,12 +5777,26 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Ref",
+            "version": "[9.0.12, 9.0.12]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Ref",
+            "version": "[9.0.12, 9.0.12]"
+          },
+          {
+            "name": "Microsoft.WindowsDesktop.App.Ref",
+            "version": "[9.0.12, 9.0.12]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Users\\wojte\\.dotnet\\sdk\\10.0.102/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

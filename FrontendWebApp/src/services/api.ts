@@ -136,9 +136,31 @@ async function fetchApi<T>(
   }
 }
 
+// Helper function to build query string for pagination
+const buildQueryString = (params?: Record<string, any>): string => {
+  if (!params) return '';
+  
+  const queryParams = new URLSearchParams();
+  
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      queryParams.append(key, value.toString());
+    }
+  });
+  
+  const queryString = queryParams.toString();
+  return queryString ? `?${queryString}` : '';
+};
+
 // Client API
 export const clientApi = {
-  getAll: (): Promise<Client[]> => fetchApi<Client[]>('/api/Client'),
+  getAll: (lastId?: number, amount?: number): Promise<Client[]> => {
+    const queryParams = buildQueryString({ 
+      lastId: lastId !== undefined ? lastId : -1,
+      amount: amount !== undefined ? amount : 100 
+    });
+    return fetchApi<Client[]>(`/api/Client${queryParams}`);
+  },
   getById: (id: number): Promise<Client> => fetchApi<Client>(`/api/Client/${id}`),
   create: (dto: CreateClientDto): Promise<Client> =>
     fetchApi<Client>('/api/Client', {
@@ -151,7 +173,13 @@ export const clientApi = {
 
 // Job API
 export const jobApi = {
-  getAll: (): Promise<Job[]> => fetchApi<Job[]>('/api/Job'),
+  getAll: (lastId?: number, amount?: number): Promise<Job[]> => {
+    const queryParams = buildQueryString({ 
+      lastId: lastId !== undefined ? lastId : -1,
+      amount: amount !== undefined ? amount : 100 
+    });
+    return fetchApi<Job[]>(`/api/Job${queryParams}`);
+  },
   getById: (id: number): Promise<Job> => fetchApi<Job>(`/api/Job/${id}`),
   create: (dto: CreateJobDto): Promise<Job> =>
     fetchApi<Job>('/api/Job', {
@@ -169,7 +197,13 @@ export const jobApi = {
 
 // Driver API
 export const driverApi = {
-  getAll: (): Promise<Driver[]> => fetchApi<Driver[]>('/api/Driver'),
+  getAll: (lastId?: number, amount?: number): Promise<Driver[]> => {
+    const queryParams = buildQueryString({ 
+      lastId: lastId !== undefined ? lastId : -1,
+      amount: amount !== undefined ? amount : 100 
+    });
+    return fetchApi<Driver[]>(`/api/Driver${queryParams}`);
+  },
   getById: (id: number): Promise<Driver> => fetchApi<Driver>(`/api/Driver/${id}`),
   create: (dto: CreateDriverDto): Promise<Driver> =>
     fetchApi<Driver>('/api/Driver', {
@@ -182,7 +216,13 @@ export const driverApi = {
 
 // Vehicle API
 export const vehicleApi = {
-  getAll: (): Promise<Vehicle[]> => fetchApi<Vehicle[]>('/api/Vehicle'),
+  getAll: (lastId?: number, amount?: number): Promise<Vehicle[]> => {
+    const queryParams = buildQueryString({ 
+      lastId: lastId !== undefined ? lastId : -1,
+      amount: amount !== undefined ? amount : 100 
+    });
+    return fetchApi<Vehicle[]>(`/api/Vehicle${queryParams}`);
+  },
   getById: (id: number): Promise<Vehicle> => fetchApi<Vehicle>(`/api/Vehicle/${id}`),
   create: (dto: CreateVehicleDto): Promise<Vehicle> =>
     fetchApi<Vehicle>('/api/Vehicle', {
@@ -195,7 +235,13 @@ export const vehicleApi = {
 
 // Transport API
 export const transportApi = {
-  getAll: (): Promise<Transport[]> => fetchApi<Transport[]>('/api/Transport'),
+  getAll: (lastId?: number, amount?: number): Promise<Transport[]> => {
+    const queryParams = buildQueryString({ 
+      lastId: lastId !== undefined ? lastId : -1,
+      amount: amount !== undefined ? amount : 100 
+    });
+    return fetchApi<Transport[]>(`/api/Transport${queryParams}`);
+  },
   getById: (id: number): Promise<Transport> => fetchApi<Transport>(`/api/Transport/${id}`),
   create: (dto: CreateTransportDto): Promise<Transport> =>
     fetchApi<Transport>('/api/Transport', {
@@ -213,7 +259,13 @@ export const transportApi = {
 
 // Route API
 export const routeApi = {
-  getAll: (): Promise<Route[]> => fetchApi<Route[]>('/api/Route'),
+  getAll: (lastId?: number, amount?: number): Promise<Route[]> => {
+    const queryParams = buildQueryString({ 
+      lastId: lastId !== undefined ? lastId : -1,
+      amount: amount !== undefined ? amount : 100 
+    });
+    return fetchApi<Route[]>(`/api/Route${queryParams}`);
+  },
   getById: (id: number): Promise<Route> => fetchApi<Route>(`/api/Route/${id}`),
   create: (dto: CreateRouteDto): Promise<Route> =>
     fetchApi<Route>('/api/Route', {
@@ -228,11 +280,24 @@ export const routeApi = {
 export const statusHistoryApi = {
   getByJob: (jobId: number): Promise<StatusHistory[]> =>
     fetchApi<StatusHistory[]>(`/api/StatusHistory/job/${jobId}`),
+  getByJobPaged: (jobId: number, lastId?: number, amount?: number): Promise<StatusHistory[]> => {
+    const queryParams = buildQueryString({ 
+      lastId: lastId !== undefined ? lastId : -1,
+      amount: amount !== undefined ? amount : 100 
+    });
+    return fetchApi<StatusHistory[]>(`/api/StatusHistory/job/${jobId}${queryParams}`);
+  },
 };
 
 // Error API
 export const errorTicketApi = {
-  getAll: (): Promise<ErrorTicket[]> => fetchApi<ErrorTicket[]>('/api/Error'),
+  getAll: (lastId?: number, amount?: number): Promise<ErrorTicket[]> => {
+    const queryParams = buildQueryString({ 
+      lastId: lastId !== undefined ? lastId : -1,
+      amount: amount !== undefined ? amount : 100 
+    });
+    return fetchApi<ErrorTicket[]>(`/api/Error${queryParams}`);
+  },
   getById: (id: number): Promise<ErrorTicket> => fetchApi<ErrorTicket>(`/api/Error/${id}`),
   create: (dto: CreateErrorTicketDto): Promise<ErrorTicket> =>
     fetchApi<ErrorTicket>('/api/Error', {

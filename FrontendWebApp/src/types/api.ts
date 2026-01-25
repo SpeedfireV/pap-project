@@ -12,7 +12,7 @@ export interface Job {
   jobId: number;
   clientId: number;
   client?: Client;
-  date: string; // DateOnly serialized as string
+  startDate: string; // DateOnly serialized as string
   status: JobStatus;
   remarks: string;
 }

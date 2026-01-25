@@ -1,6 +1,7 @@
 import { Form, Button, Alert, Card, Tabs, Tab, Row, Col } from "react-bootstrap";
-import { useState, FormEvent, useEffect, useMemo } from "react";
+import { useState, FormEvent, useEffect, useMemo, useRef } from "react";
 import Select from 'react-select';
+import AsyncSelect from 'react-select/async';
 import { useAuth } from '../contexts/AuthContext';
 import {
   clientApi,
@@ -29,6 +30,7 @@ import {
 interface SelectOption {
   value: number;
   label: string;
+  isLoadMore?: boolean;
 }
 
 // Custom styles for react-select to match Bootstrap
@@ -46,15 +48,31 @@ const customSelectStyles = {
     ...provided,
     zIndex: 9999,
   }),
-  option: (provided: any, state: any) => ({
+    option: (provided: any, state: any) => ({
     ...provided,
-    backgroundColor: state.isSelected ? '#0d6efd' : state.isFocused ? '#f8f9fa' : 'white',
-    color: state.isSelected ? 'white' : '#212529',
+    backgroundColor: state.data?.isLoadMore 
+      ? '#f8f9fa' 
+      : state.isSelected 
+        ? '#0d6efd' 
+        : state.isFocused 
+          ? '#f8f9fa' 
+          : 'white',
+    color: state.data?.isLoadMore 
+      ? '#0d6efd' 
+      : state.isSelected 
+        ? 'white' 
+        : '#212529',
+    fontWeight: state.data?.isLoadMore ? '500' : 'normal',
+    cursor: state.data?.isLoadMore ? 'pointer' : 'default',
     '&:active': {
-      backgroundColor: state.isSelected ? '#0d6efd' : '#e9ecef',
+      backgroundColor: state.data?.isLoadMore ? '#e9ecef' : state.isSelected ? '#0d6efd' : '#e9ecef',
     },
   }),
 };
+
+// Pagination constants
+const INITIAL_PAGE_SIZE = 10; // Initial number of items to load
+const EXPAND_PAGE_SIZE = 20; // Additional items to load when expanding
 
 const DataEntryForm: React.FC = () => {
   const { isAuthenticated } = useAuth();
@@ -69,39 +87,45 @@ const DataEntryForm: React.FC = () => {
   const [vehicles, setVehicles] = useState<any[]>([]);
   const [jobs, setJobs] = useState<any[]>([]);
   const [transports, setTransports] = useState<any[]>([]);
-  
-  // Create a map of clients for quick lookup
-  const clientMap = useMemo(() => {
-    const map: Record<number, string> = {};
-    clients.forEach(client => {
-      map[client.clientId] = client.name;
-    });
-    return map;
-  }, [clients]);
 
-  // Create a map of vehicles for quick lookup
-  const vehicleMap = useMemo(() => {
-    const map: Record<number, { licensePlate: string; type: string }> = {};
-    vehicles.forEach(vehicle => {
-      map[vehicle.vehicleId] = {
-        licensePlate: vehicle.licensePlate,
-        type: VehicleType[vehicle.type] || 'Unknown'
-      };
-    });
-    return map;
-  }, [vehicles]);
+  // State to trigger refresh of dropdowns
+  const [dropdownRefreshKey, setDropdownRefreshKey] = useState({
+    clients: 0,
+    jobs: 0,
+    drivers: 0,
+    vehicles: 0,
+    transports: 0
+  });
 
-  // Create a map of drivers for quick lookup
-  const driverMap = useMemo(() => {
-    const map: Record<number, { name: string; surname: string }> = {};
-    drivers.forEach(driver => {
-      map[driver.driverId] = {
-        name: driver.name,
-        surname: driver.surname
-      };
-    });
-    return map;
-  }, [drivers]);
+  // Cache for fetched data to avoid redundant API calls
+  const dataCacheRef = useRef<{
+    clients: Map<number, any>;
+    jobs: Map<number, any>;
+    drivers: Map<number, any>;
+    vehicles: Map<number, any>;
+    transports: Map<number, any>;
+  }>({
+    clients: new Map(),
+    jobs: new Map(),
+    drivers: new Map(),
+    vehicles: new Map(),
+    transports: new Map()
+  });
+
+  // Ref to store loaded data IDs (not full objects)
+  const loadedDataRef = useRef<{
+    clientIds: number[];
+    jobIds: number[];
+    driverIds: number[];
+    vehicleIds: number[];
+    transportIds: number[];
+  }>({
+    clientIds: [],
+    jobIds: [],
+    driverIds: [],
+    vehicleIds: [],
+    transportIds: []
+  });
 
   // Form states
   const [clientForm, setClientForm] = useState<CreateClientDto>({
@@ -151,38 +175,540 @@ const DataEntryForm: React.FC = () => {
     estimatedTime: '00:00:00'
   });
 
-  // Convert data to react-select options
-  const clientOptions: SelectOption[] = clients.map(client => ({
-    value: client.clientId,
-    label: `${client.name} (NIP: ${client.nip})`
-  }));
+  // Function to fetch initial data with correct pagination
+  const fetchInitialData = async (type: 'clients' | 'jobs' | 'drivers' | 'vehicles' | 'transports') => {
+    try {
+      let data: any[] = [];
+      let lastId = -1;
+      
+      switch (type) {
+        case 'clients':
+          data = await clientApi.getAll(-1, INITIAL_PAGE_SIZE);
+          loadedDataRef.current.clientIds = data.map(item => item.clientId);
+          data.forEach(item => dataCacheRef.current.clients.set(item.clientId, item));
+          break;
+        case 'jobs':
+          data = await jobApi.getAll(-1, INITIAL_PAGE_SIZE);
+          loadedDataRef.current.jobIds = data.map(item => item.jobId);
+          data.forEach(item => dataCacheRef.current.jobs.set(item.jobId, item));
+          break;
+        case 'drivers':
+          data = await driverApi.getAll(-1, INITIAL_PAGE_SIZE);
+          loadedDataRef.current.driverIds = data.map(item => item.driverId);
+          data.forEach(item => dataCacheRef.current.drivers.set(item.driverId, item));
+          break;
+        case 'vehicles':
+          data = await vehicleApi.getAll(-1, INITIAL_PAGE_SIZE);
+          loadedDataRef.current.vehicleIds = data.map(item => item.vehicleId);
+          data.forEach(item => dataCacheRef.current.vehicles.set(item.vehicleId, item));
+          break;
+        case 'transports':
+          data = await transportApi.getAll(-1, INITIAL_PAGE_SIZE);
+          loadedDataRef.current.transportIds = data.map(item => item.transportId);
+          data.forEach(item => dataCacheRef.current.transports.set(item.transportId, item));
+          break;
+      }
+      
+      return data;
+    } catch (err) {
+      console.error(`Error fetching ${type}:`, err);
+      return [];
+    }
+  };
 
-  const jobOptions: SelectOption[] = jobs.map(job => {
-    const clientName = clientMap[job.clientId] || 'Unknown Client';
-    return {
-      value: job.jobId,
-      label: `Job #${job.jobId} - ${clientName} - ${job.startDate}`
-    };
-  });
+  // Function to load more data with correct pagination
+  const loadMoreData = async (type: 'clients' | 'jobs' | 'drivers' | 'vehicles' | 'transports') => {
+    try {
+      // Get the last ID from current loaded data
+      let lastId = -1;
+      let currentIds: number[] = [];
+      
+      switch (type) {
+        case 'clients':
+          currentIds = loadedDataRef.current.clientIds;
+          lastId = currentIds.length > 0 ? Math.max(...currentIds) : -1;
+          break;
+        case 'jobs':
+          currentIds = loadedDataRef.current.jobIds;
+          lastId = currentIds.length > 0 ? Math.max(...currentIds) : -1;
+          break;
+        case 'drivers':
+          currentIds = loadedDataRef.current.driverIds;
+          lastId = currentIds.length > 0 ? Math.max(...currentIds) : -1;
+          break;
+        case 'vehicles':
+          currentIds = loadedDataRef.current.vehicleIds;
+          lastId = currentIds.length > 0 ? Math.max(...currentIds) : -1;
+          break;
+        case 'transports':
+          currentIds = loadedDataRef.current.transportIds;
+          lastId = currentIds.length > 0 ? Math.max(...currentIds) : -1;
+          break;
+      }
+      
+      let newData: any[] = [];
+      
+      switch (type) {
+        case 'clients':
+          newData = await clientApi.getAll(lastId, EXPAND_PAGE_SIZE);
+          if (newData.length > 0) {
+            const newIds = newData.map(item => item.clientId);
+            loadedDataRef.current.clientIds = [...loadedDataRef.current.clientIds, ...newIds];
+            newData.forEach(item => dataCacheRef.current.clients.set(item.clientId, item));
+          }
+          break;
+        case 'jobs':
+          newData = await jobApi.getAll(lastId, EXPAND_PAGE_SIZE);
+          if (newData.length > 0) {
+            const newIds = newData.map(item => item.jobId);
+            loadedDataRef.current.jobIds = [...loadedDataRef.current.jobIds, ...newIds];
+            newData.forEach(item => dataCacheRef.current.jobs.set(item.jobId, item));
+          }
+          break;
+        case 'drivers':
+          newData = await driverApi.getAll(lastId, EXPAND_PAGE_SIZE);
+          if (newData.length > 0) {
+            const newIds = newData.map(item => item.driverId);
+            loadedDataRef.current.driverIds = [...loadedDataRef.current.driverIds, ...newIds];
+            newData.forEach(item => dataCacheRef.current.drivers.set(item.driverId, item));
+          }
+          break;
+        case 'vehicles':
+          newData = await vehicleApi.getAll(lastId, EXPAND_PAGE_SIZE);
+          if (newData.length > 0) {
+            const newIds = newData.map(item => item.vehicleId);
+            loadedDataRef.current.vehicleIds = [...loadedDataRef.current.vehicleIds, ...newIds];
+            newData.forEach(item => dataCacheRef.current.vehicles.set(item.vehicleId, item));
+          }
+          break;
+        case 'transports':
+          newData = await transportApi.getAll(lastId, EXPAND_PAGE_SIZE);
+          if (newData.length > 0) {
+            const newIds = newData.map(item => item.transportId);
+            loadedDataRef.current.transportIds = [...loadedDataRef.current.transportIds, ...newIds];
+            newData.forEach(item => dataCacheRef.current.transports.set(item.transportId, item));
+          }
+          break;
+      }
+      
+      if (newData.length > 0) {
+        // Trigger refresh for this dropdown type
+        setDropdownRefreshKey(prev => ({
+          ...prev,
+          [type]: prev[type] + 1
+        }));
+        
+        return true;
+      } else {
+        // No more data available
+        return false;
+      }
+    } catch (err) {
+      console.error(`Error loading more ${type}:`, err);
+      return false;
+    }
+  };
 
-  const driverOptions: SelectOption[] = drivers.map(driver => ({
-    value: driver.driverId,
-    label: `${driver.name} ${driver.surname} (${DriverStatus[driver.status] || 'Unknown'})`
-  }));
+  // Helper function to get client name for job dropdown
+  const getClientNameForJob = async (clientId: number): Promise<string> => {
+    // Check cache first
+    if (dataCacheRef.current.clients.has(clientId)) {
+      return dataCacheRef.current.clients.get(clientId).name;
+    }
+    
+    // Fetch from API
+    try {
+      const client = await clientApi.getById(clientId);
+      dataCacheRef.current.clients.set(clientId, client);
+      return client.name;
+    } catch (err) {
+      console.error(`Error fetching client ${clientId}:`, err);
+      return 'Unknown Client';
+    }
+  };
 
-  const vehicleOptions: SelectOption[] = vehicles.map(vehicle => ({
-    value: vehicle.vehicleId,
-    label: `${vehicle.licensePlate} - ${VehicleType[vehicle.type] || 'Unknown'} (${VehicleState[vehicle.state] || 'Unknown'})`
-  }));
+  // Helper function to get vehicle info for transport dropdown
+  const getVehicleInfoForTransport = async (vehicleId: number): Promise<{licensePlate: string, type: string}> => {
+    // Check cache first
+    if (dataCacheRef.current.vehicles.has(vehicleId)) {
+      const vehicle = dataCacheRef.current.vehicles.get(vehicleId);
+      return {
+        licensePlate: vehicle.licensePlate,
+        type: VehicleType[vehicle.type] || 'Unknown'
+      };
+    }
+    
+    // Fetch from API
+    try {
+      const vehicle = await vehicleApi.getById(vehicleId);
+      dataCacheRef.current.vehicles.set(vehicleId, vehicle);
+      return {
+        licensePlate: vehicle.licensePlate,
+        type: VehicleType[vehicle.type] || 'Unknown'
+      };
+    } catch (err) {
+      console.error(`Error fetching vehicle ${vehicleId}:`, err);
+      return {
+        licensePlate: 'Unknown',
+        type: 'Unknown'
+      };
+    }
+  };
 
-  const transportOptions: SelectOption[] = transports.map(transport => {
-    const vehicleInfo = vehicleMap[transport.vehicleId];
-    const vehicleLabel = vehicleInfo ? vehicleInfo.licensePlate : 'No Vehicle';
-    return {
-      value: transport.transportId,
-      label: `Transport #${transport.transportId} - Job: ${transport.jobId} - ${vehicleLabel}`
-    };
-  });
+  // Async load functions for dropdowns
+  const loadClientOptions = async (inputValue: string): Promise<SelectOption[]> => {
+    try {
+      // Load initial data if not loaded
+      if (loadedDataRef.current.clientIds.length === 0) {
+        await fetchInitialData('clients');
+      }
+      
+      // Get all loaded client IDs
+      const clientIds = loadedDataRef.current.clientIds;
+      
+      // Filter based on input value
+      let filteredIds = clientIds;
+      if (inputValue) {
+        filteredIds = clientIds.filter(clientId => {
+          const client = dataCacheRef.current.clients.get(clientId);
+          if (!client) return false;
+          return (
+            client.name.toLowerCase().includes(inputValue.toLowerCase()) ||
+            client.nip.toString().includes(inputValue)
+          );
+        });
+      }
+      
+      // Create options from filtered IDs
+      const optionsPromises = filteredIds.map(async (clientId) => {
+        const client = dataCacheRef.current.clients.get(clientId);
+        if (client) {
+          return {
+            value: clientId,
+            label: `${client.name} (NIP: ${client.nip})`
+          };
+        } else {
+          // Fetch if not in cache
+          try {
+            const fetchedClient = await clientApi.getById(clientId);
+            dataCacheRef.current.clients.set(clientId, fetchedClient);
+            return {
+              value: clientId,
+              label: `${fetchedClient.name} (NIP: ${fetchedClient.nip})`
+            };
+          } catch (err) {
+            console.error(`Error fetching client ${clientId}:`, err);
+            return {
+              value: clientId,
+              label: `Client #${clientId} (Error loading)`
+            };
+          }
+        }
+      });
+      
+      const options = await Promise.all(optionsPromises) as SelectOption[];
+      
+      // Add "Load More" option if we have data
+      if (options.length > 0) {
+        options.push({
+          value: -1,
+          label: `Load more clients`,
+          isLoadMore: true
+        });
+      }
+      
+      return options;
+    } catch (err) {
+      console.error('Error loading clients:', err);
+      return [];
+    }
+  };
+
+  const loadJobOptions = async (inputValue: string): Promise<SelectOption[]> => {
+    try {
+      // Load initial data if not loaded
+      if (loadedDataRef.current.jobIds.length === 0) {
+        await fetchInitialData('jobs');
+      }
+      
+      // Get all loaded job IDs
+      const jobIds = loadedDataRef.current.jobIds;
+      
+      // Filter based on input value
+      let filteredIds = jobIds;
+      if (inputValue) {
+        filteredIds = jobIds.filter(jobId => {
+          const job = dataCacheRef.current.jobs.get(jobId);
+          if (!job) return false;
+          return (
+            job.jobId.toString().includes(inputValue) ||
+            job.date.includes(inputValue)
+          );
+        });
+      }
+      
+      // Create options from filtered IDs
+      const optionsPromises = filteredIds.map(async (jobId) => {
+        const job = dataCacheRef.current.jobs.get(jobId);
+        let clientName = 'Unknown Client';
+        
+        if (job) {
+          // Get client name
+          clientName = await getClientNameForJob(job.clientId);
+          return {
+            value: jobId,
+            label: `Job #${job.jobId} - ${clientName} - ${job.startDate}`
+          };
+        } else {
+          // Fetch job if not in cache
+          try {
+            const fetchedJob = await jobApi.getById(jobId);
+            dataCacheRef.current.jobs.set(jobId, fetchedJob);
+            
+            // Get client name
+            clientName = await getClientNameForJob(fetchedJob.clientId);
+            return {
+              value: jobId,
+              label: `Job #${fetchedJob.jobId} - ${clientName} - ${fetchedJob.startDate}`
+            };
+          } catch (err) {
+            console.error(`Error fetching job ${jobId}:`, err);
+            return {
+              value: jobId,
+              label: `Job #${jobId} (Error loading)`
+            };
+          }
+        }
+      });
+      
+      const options = await Promise.all(optionsPromises) as SelectOption[];
+      
+      // Add "Load More" option if we have data
+      if (options.length > 0) {
+        options.push({
+          value: -1,
+          label: `Load more jobs`,
+          isLoadMore: true
+        });
+      }
+      
+      return options;
+    } catch (err) {
+      console.error('Error loading jobs:', err);
+      return [];
+    }
+  };
+
+  const loadDriverOptions = async (inputValue: string): Promise<SelectOption[]> => {
+    try {
+      // Load initial data if not loaded
+      if (loadedDataRef.current.driverIds.length === 0) {
+        await fetchInitialData('drivers');
+      }
+      
+      // Get all loaded driver IDs
+      const driverIds = loadedDataRef.current.driverIds;
+      
+      // Filter based on input value
+      let filteredIds = driverIds;
+      if (inputValue) {
+        filteredIds = driverIds.filter(driverId => {
+          const driver = dataCacheRef.current.drivers.get(driverId);
+          if (!driver) return false;
+          return (
+            driver.name.toLowerCase().includes(inputValue.toLowerCase()) ||
+            driver.surname.toLowerCase().includes(inputValue.toLowerCase()) ||
+            driver.licenseNumber.toString().includes(inputValue)
+          );
+        });
+      }
+      
+      // Create options from filtered IDs
+      const optionsPromises = filteredIds.map(async (driverId) => {
+        const driver = dataCacheRef.current.drivers.get(driverId);
+        if (driver) {
+          return {
+            value: driverId,
+            label: `${driver.name} ${driver.surname} (${DriverStatus[driver.status] || 'Unknown'})`
+          };
+        } else {
+          // Fetch if not in cache
+          try {
+            const fetchedDriver = await driverApi.getById(driverId);
+            dataCacheRef.current.drivers.set(driverId, fetchedDriver);
+            return {
+              value: driverId,
+              label: `${fetchedDriver.name} ${fetchedDriver.surname} (${DriverStatus[fetchedDriver.status] || 'Unknown'})`
+            };
+          } catch (err) {
+            console.error(`Error fetching driver ${driverId}:`, err);
+            return {
+              value: driverId,
+              label: `Driver #${driverId} (Error loading)`
+            };
+          }
+        }
+      });
+      
+      const options = await Promise.all(optionsPromises) as SelectOption[];
+      
+      // Add "Load More" option if we have data
+      if (options.length > 0) {
+        options.push({
+          value: -1,
+          label: `Load more drivers`,
+          isLoadMore: true
+        });
+      }
+      
+      return options;
+    } catch (err) {
+      console.error('Error loading drivers:', err);
+      return [];
+    }
+  };
+
+  const loadVehicleOptions = async (inputValue: string): Promise<SelectOption[]> => {
+    try {
+      // Load initial data if not loaded
+      if (loadedDataRef.current.vehicleIds.length === 0) {
+        await fetchInitialData('vehicles');
+      }
+      
+      // Get all loaded vehicle IDs
+      const vehicleIds = loadedDataRef.current.vehicleIds;
+      
+      // Filter based on input value
+      let filteredIds = vehicleIds;
+      if (inputValue) {
+        filteredIds = vehicleIds.filter(vehicleId => {
+          const vehicle = dataCacheRef.current.vehicles.get(vehicleId);
+          if (!vehicle) return false;
+          return (
+            vehicle.licensePlate.toLowerCase().includes(inputValue.toLowerCase()) ||
+            VehicleType[vehicle.type]?.toLowerCase().includes(inputValue.toLowerCase())
+          );
+        });
+      }
+      
+      // Create options from filtered IDs
+      const optionsPromises = filteredIds.map(async (vehicleId) => {
+        const vehicle = dataCacheRef.current.vehicles.get(vehicleId);
+        if (vehicle) {
+          return {
+            value: vehicleId,
+            label: `${vehicle.licensePlate} - ${VehicleType[vehicle.type] || 'Unknown'} (${VehicleState[vehicle.state] || 'Unknown'})`
+          };
+        } else {
+          // Fetch if not in cache
+          try {
+            const fetchedVehicle = await vehicleApi.getById(vehicleId);
+            dataCacheRef.current.vehicles.set(vehicleId, fetchedVehicle);
+            return {
+              value: vehicleId,
+              label: `${fetchedVehicle.licensePlate} - ${VehicleType[fetchedVehicle.type] || 'Unknown'} (${VehicleState[fetchedVehicle.state] || 'Unknown'})`
+            };
+          } catch (err) {
+            console.error(`Error fetching vehicle ${vehicleId}:`, err);
+            return {
+              value: vehicleId,
+              label: `Vehicle #${vehicleId} (Error loading)`
+            };
+          }
+        }
+      });
+      
+      const options = await Promise.all(optionsPromises) as SelectOption[];
+      
+      // Add "Load More" option if we have data
+      if (options.length > 0) {
+        options.push({
+          value: -1,
+          label: `Load more vehicles`,
+          isLoadMore: true
+        });
+      }
+      
+      return options;
+    } catch (err) {
+      console.error('Error loading vehicles:', err);
+      return [];
+    }
+  };
+
+  const loadTransportOptions = async (inputValue: string): Promise<SelectOption[]> => {
+    try {
+      // Load initial data if not loaded
+      if (loadedDataRef.current.transportIds.length === 0) {
+        await fetchInitialData('transports');
+      }
+      
+      // Get all loaded transport IDs
+      const transportIds = loadedDataRef.current.transportIds;
+      
+      // Filter based on input value
+      let filteredIds = transportIds;
+      if (inputValue) {
+        filteredIds = transportIds.filter(transportId => {
+          const transport = dataCacheRef.current.transports.get(transportId);
+          if (!transport) return false;
+          return (
+            transport.transportId.toString().includes(inputValue) ||
+            transport.jobId.toString().includes(inputValue)
+          );
+        });
+      }
+      
+      // Create options from filtered IDs
+      const optionsPromises = filteredIds.map(async (transportId) => {
+        const transport = dataCacheRef.current.transports.get(transportId);
+        
+        if (transport) {
+          // Get vehicle info
+          const vehicleInfo = await getVehicleInfoForTransport(transport.vehicleId);
+          return {
+            value: transportId,
+            label: `Transport #${transport.transportId} - Job: ${transport.jobId} - ${vehicleInfo.licensePlate}`
+          };
+        } else {
+          // Fetch transport if not in cache
+          try {
+            const fetchedTransport = await transportApi.getById(transportId);
+            dataCacheRef.current.transports.set(transportId, fetchedTransport);
+            
+            // Get vehicle info
+            const vehicleInfo = await getVehicleInfoForTransport(fetchedTransport.vehicleId);
+            return {
+              value: transportId,
+              label: `Transport #${fetchedTransport.transportId} - Job: ${fetchedTransport.jobId} - ${vehicleInfo.licensePlate}`
+            };
+          } catch (err) {
+            console.error(`Error fetching transport ${transportId}:`, err);
+            return {
+              value: transportId,
+              label: `Transport #${transportId} (Error loading)`
+            };
+          }
+        }
+      });
+      
+      const options = await Promise.all(optionsPromises) as SelectOption[];
+      
+      // Add "Load More" option if we have data
+      if (options.length > 0) {
+        options.push({
+          value: -1,
+          label: `Load more transports`,
+          isLoadMore: true
+        });
+      }
+      
+      return options;
+    } catch (err) {
+      console.error('Error loading transports:', err);
+      return [];
+    }
+  };
 
   // Status enum options
   const jobStatusOptions: SelectOption[] = Object.entries(JobStatus)
@@ -220,35 +746,86 @@ const DataEntryForm: React.FC = () => {
       label: key
     }));
 
-  // Filter functions for searchable dropdowns
-  const filterOption = (option: any, inputValue: string) => {
-    return option.label.toLowerCase().includes(inputValue.toLowerCase());
+  // Handler for dropdown selection with Load More support
+  const handleDropdownChange = (
+    selected: SelectOption | null,
+    setForm: React.Dispatch<React.SetStateAction<any>>,
+    fieldName: string,
+    type: 'clients' | 'jobs' | 'drivers' | 'vehicles' | 'transports'
+  ) => {
+    if (!selected) {
+      setForm((prev: any) => ({ ...prev, [fieldName]: 0 }));
+      return;
+    }
+
+    // Check if this is a "Load More" option
+    if (selected.isLoadMore) {
+      // Load more data and don't change the selection
+      loadMoreData(type);
+      return;
+    }
+
+    // Regular selection
+    setForm((prev: any) => ({ ...prev, [fieldName]: selected.value }));
   };
 
-  // Load related data for dropdowns
+  // Load initial data for basic maps
   useEffect(() => {
-    const loadRelatedData = async () => {
+    const loadInitialData = async () => {
       try {
-        const [clientsData, driversData, vehiclesData, jobsData, transportsData] = await Promise.all([
-          clientApi.getAll(),
-          driverApi.getAll(),
-          vehicleApi.getAll(),
-          jobApi.getAll(),
-          transportApi.getAll()
+        // Load a few records for basic data
+        const [clientsData, driversData, vehiclesData] = await Promise.all([
+          clientApi.getAll(-1, 20),
+          driverApi.getAll(-1, 20),
+          vehicleApi.getAll(-1, 20)
         ]);
         
-        setClients(clientsData);
-        setDrivers(driversData);
-        setVehicles(vehiclesData);
-        setJobs(jobsData);
-        setTransports(transportsData);
+        // Store in cache
+        clientsData.forEach(client => dataCacheRef.current.clients.set(client.clientId, client));
+        driversData.forEach(driver => dataCacheRef.current.drivers.set(driver.driverId, driver));
+        vehiclesData.forEach(vehicle => dataCacheRef.current.vehicles.set(vehicle.vehicleId, vehicle));
+        
+        // Also update loaded IDs for dropdowns
+        loadedDataRef.current.clientIds = clientsData.map(c => c.clientId);
+        loadedDataRef.current.driverIds = driversData.map(d => d.driverId);
+        loadedDataRef.current.vehicleIds = vehiclesData.map(v => v.vehicleId);
+        
       } catch (err) {
-        console.error('Failed to load related data:', err);
+        console.error('Failed to load initial data:', err);
       }
     };
     
-    loadRelatedData();
+    loadInitialData();
   }, []);
+
+  // Reset loaded data when form is reset or tab changes
+  useEffect(() => {
+    // Clear loaded data ref when tab changes
+    loadedDataRef.current = {
+      clientIds: [],
+      jobIds: [],
+      driverIds: [],
+      vehicleIds: [],
+      transportIds: []
+    };
+    
+    // Clear cache
+    dataCacheRef.current = {
+      clients: new Map(),
+      jobs: new Map(),
+      drivers: new Map(),
+      vehicles: new Map(),
+      transports: new Map()
+    };
+    
+    setDropdownRefreshKey({
+      clients: 0,
+      jobs: 0,
+      drivers: 0,
+      vehicles: 0,
+      transports: 0
+    });
+  }, [activeTab]);
 
   const handleClientSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -260,9 +837,11 @@ const DataEntryForm: React.FC = () => {
       await clientApi.create(clientForm);
       setSuccess('Client added successfully!');
       setClientForm({ name: '', nip: 0, address: '', phone: 0 });
-      // Refresh clients list
-      const updatedClients = await clientApi.getAll();
-      setClients(updatedClients);
+      // Refresh client data
+      const updatedClients = await clientApi.getAll(-1, 20);
+      dataCacheRef.current.clients.clear();
+      updatedClients.forEach(client => dataCacheRef.current.clients.set(client.clientId, client));
+      loadedDataRef.current.clientIds = updatedClients.map(c => c.clientId);
     } catch (err) {
       handleError(err, 'client');
     } finally {
@@ -285,9 +864,11 @@ const DataEntryForm: React.FC = () => {
         status: JobStatus.Normal,
         remarks: ''
       });
-      // Refresh jobs list
-      const updatedJobs = await jobApi.getAll();
-      setJobs(updatedJobs);
+      // Refresh job data
+      const updatedJobs = await jobApi.getAll(-1, 20);
+      dataCacheRef.current.jobs.clear();
+      updatedJobs.forEach(job => dataCacheRef.current.jobs.set(job.jobId, job));
+      loadedDataRef.current.jobIds = updatedJobs.map(j => j.jobId);
     } catch (err) {
       handleError(err, 'job');
     } finally {
@@ -311,9 +892,11 @@ const DataEntryForm: React.FC = () => {
         phone: 0,
         status: DriverStatus.Available
       });
-      // Refresh drivers list
-      const updatedDrivers = await driverApi.getAll();
-      setDrivers(updatedDrivers);
+      // Refresh driver data
+      const updatedDrivers = await driverApi.getAll(-1, 20);
+      dataCacheRef.current.drivers.clear();
+      updatedDrivers.forEach(driver => dataCacheRef.current.drivers.set(driver.driverId, driver));
+      loadedDataRef.current.driverIds = updatedDrivers.map(d => d.driverId);
     } catch (err) {
       handleError(err, 'driver');
     } finally {
@@ -336,9 +919,11 @@ const DataEntryForm: React.FC = () => {
         capacity: 0,
         state: VehicleState.Operational
       });
-      // Refresh vehicles list
-      const updatedVehicles = await vehicleApi.getAll();
-      setVehicles(updatedVehicles);
+      // Refresh vehicle data
+      const updatedVehicles = await vehicleApi.getAll(-1, 20);
+      dataCacheRef.current.vehicles.clear();
+      updatedVehicles.forEach(vehicle => dataCacheRef.current.vehicles.set(vehicle.vehicleId, vehicle));
+      loadedDataRef.current.vehicleIds = updatedVehicles.map(v => v.vehicleId);
     } catch (err) {
       handleError(err, 'vehicle');
     } finally {
@@ -364,8 +949,11 @@ const DataEntryForm: React.FC = () => {
         cargoMass: 0,
         status: TransportStatus.BookingConfirmed
       });
-      const updatedTransports = await transportApi.getAll();
-      setTransports(updatedTransports);
+      // Refresh transport data
+      const updatedTransports = await transportApi.getAll(-1, 20);
+      dataCacheRef.current.transports.clear();
+      updatedTransports.forEach(transport => dataCacheRef.current.transports.set(transport.transportId, transport));
+      loadedDataRef.current.transportIds = updatedTransports.map(t => t.transportId);
     } catch (err) {
       handleError(err, 'transport');
     } finally {
@@ -389,6 +977,11 @@ const DataEntryForm: React.FC = () => {
         distance: 0,
         estimatedTime: '00:00:00'
       });
+      // Refresh transport data
+      const updatedTransports = await transportApi.getAll(-1, 20);
+      dataCacheRef.current.transports.clear();
+      updatedTransports.forEach(transport => dataCacheRef.current.transports.set(transport.transportId, transport));
+      loadedDataRef.current.transportIds = updatedTransports.map(t => t.transportId);
     } catch (err) {
       handleError(err, 'route');
     } finally {
@@ -407,6 +1000,144 @@ const DataEntryForm: React.FC = () => {
       setError(`Failed to add ${entity}: ${err instanceof Error ? err.message : 'Unknown error'}`);
     }
   };
+
+  // Helper function to get current value for dropdown with proper data fetching
+  const getDropdownValue = async (id: number, type: 'clients' | 'jobs' | 'drivers' | 'vehicles' | 'transports'): Promise<SelectOption | null> => {
+    if (!id) return null;
+    
+    try {
+      switch (type) {
+        case 'clients':
+          const client = dataCacheRef.current.clients.get(id);
+          if (client) {
+            return { value: id, label: `${client.name} (NIP: ${client.nip})` };
+          } else {
+            const fetchedClient = await clientApi.getById(id);
+            dataCacheRef.current.clients.set(id, fetchedClient);
+            return { value: id, label: `${fetchedClient.name} (NIP: ${fetchedClient.nip})` };
+          }
+        case 'jobs':
+          const job = dataCacheRef.current.jobs.get(id);
+          if (job) {
+            const clientName = await getClientNameForJob(job.clientId);
+            return { value: id, label: `Job #${job.jobId} - ${clientName} - ${job.startDate}` };
+          } else {
+            const fetchedJob = await jobApi.getById(id);
+            dataCacheRef.current.jobs.set(id, fetchedJob);
+            const clientName = await getClientNameForJob(fetchedJob.clientId);
+            return { value: id, label: `Job #${fetchedJob.jobId} - ${clientName} - ${fetchedJob.startDate}` };
+          }
+        case 'drivers':
+          const driver = dataCacheRef.current.drivers.get(id);
+          if (driver) {
+            return { 
+              value: id, 
+              label: `${driver.name} ${driver.surname} (${DriverStatus[driver.status] || 'Unknown'})` 
+            };
+          } else {
+            const fetchedDriver = await driverApi.getById(id);
+            dataCacheRef.current.drivers.set(id, fetchedDriver);
+            return { 
+              value: id, 
+              label: `${fetchedDriver.name} ${fetchedDriver.surname} (${DriverStatus[fetchedDriver.status] || 'Unknown'})` 
+            };
+          }
+        case 'vehicles':
+          const vehicle = dataCacheRef.current.vehicles.get(id);
+          if (vehicle) {
+            return { 
+              value: id, 
+              label: `${vehicle.licensePlate} - ${VehicleType[vehicle.type] || 'Unknown'} (${VehicleState[vehicle.state] || 'Unknown'})` 
+            };
+          } else {
+            const fetchedVehicle = await vehicleApi.getById(id);
+            dataCacheRef.current.vehicles.set(id, fetchedVehicle);
+            return { 
+              value: id, 
+              label: `${fetchedVehicle.licensePlate} - ${VehicleType[fetchedVehicle.type] || 'Unknown'} (${VehicleState[fetchedVehicle.state] || 'Unknown'})` 
+            };
+          }
+        case 'transports':
+          const transport = dataCacheRef.current.transports.get(id);
+          if (transport) {
+            const vehicleInfo = await getVehicleInfoForTransport(transport.vehicleId);
+            return { 
+              value: id, 
+              label: `Transport #${transport.transportId} - Job: ${transport.jobId} - ${vehicleInfo.licensePlate}` 
+            };
+          } else {
+            const fetchedTransport = await transportApi.getById(id);
+            dataCacheRef.current.transports.set(id, fetchedTransport);
+            const vehicleInfo = await getVehicleInfoForTransport(fetchedTransport.vehicleId);
+            return { 
+              value: id, 
+              label: `Transport #${fetchedTransport.transportId} - Job: ${fetchedTransport.jobId} - ${vehicleInfo.licensePlate}` 
+            };
+          }
+        default:
+          return null;
+      }
+    } catch (err) {
+      console.error(`Error getting dropdown value for ${type} ${id}:`, err);
+      return { value: id, label: `${type.slice(0, -1)} #${id} (Error loading)` };
+    }
+  };
+
+  // State for dropdown values
+  const [dropdownValues, setDropdownValues] = useState<{
+    clients: Map<number, SelectOption>;
+    jobs: Map<number, SelectOption>;
+    drivers: Map<number, SelectOption>;
+    vehicles: Map<number, SelectOption>;
+    transports: Map<number, SelectOption>;
+  }>({
+    clients: new Map(),
+    jobs: new Map(),
+    drivers: new Map(),
+    vehicles: new Map(),
+    transports: new Map()
+  });
+
+  // Effect to load dropdown values when IDs change
+  useEffect(() => {
+    const loadDropdownValues = async () => {
+      const newValues = { ...dropdownValues };
+      
+      // Load client values
+      if (jobForm.clientId && !newValues.clients.has(jobForm.clientId)) {
+        const value = await getDropdownValue(jobForm.clientId, 'clients');
+        if (value) newValues.clients.set(jobForm.clientId, value);
+      }
+      
+      // Load job values for transport form
+      if (transportForm.jobId && !newValues.jobs.has(transportForm.jobId)) {
+        const value = await getDropdownValue(transportForm.jobId, 'jobs');
+        if (value) newValues.jobs.set(transportForm.jobId, value);
+      }
+      
+      // Load driver values for transport form
+      if (transportForm.driverId && !newValues.drivers.has(transportForm.driverId)) {
+        const value = await getDropdownValue(transportForm.driverId, 'drivers');
+        if (value) newValues.drivers.set(transportForm.driverId, value);
+      }
+      
+      // Load vehicle values for transport form
+      if (transportForm.vehicleId && !newValues.vehicles.has(transportForm.vehicleId)) {
+        const value = await getDropdownValue(transportForm.vehicleId, 'vehicles');
+        if (value) newValues.vehicles.set(transportForm.vehicleId, value);
+      }
+      
+      // Load transport values for route form
+      if (routeForm.transportId && !newValues.transports.has(routeForm.transportId)) {
+        const value = await getDropdownValue(routeForm.transportId, 'transports');
+        if (value) newValues.transports.set(routeForm.transportId, value);
+      }
+      
+      setDropdownValues(newValues);
+    };
+    
+    loadDropdownValues();
+  }, [jobForm.clientId, transportForm.jobId, transportForm.driverId, transportForm.vehicleId, routeForm.transportId]);
 
   const resetForm = () => {
     setClientForm({ name: '', nip: 0, address: '', phone: 0 });
@@ -447,6 +1178,42 @@ const DataEntryForm: React.FC = () => {
     });
     setError(null);
     setSuccess(null);
+    
+    // Clear all loaded data
+    loadedDataRef.current = {
+      clientIds: [],
+      jobIds: [],
+      driverIds: [],
+      vehicleIds: [],
+      transportIds: []
+    };
+    
+    // Clear cache
+    dataCacheRef.current = {
+      clients: new Map(),
+      jobs: new Map(),
+      drivers: new Map(),
+      vehicles: new Map(),
+      transports: new Map()
+    };
+    
+    // Reset refresh keys
+    setDropdownRefreshKey({
+      clients: 0,
+      jobs: 0,
+      drivers: 0,
+      vehicles: 0,
+      transports: 0
+    });
+    
+    // Clear dropdown values
+    setDropdownValues({
+      clients: new Map(),
+      jobs: new Map(),
+      drivers: new Map(),
+      vehicles: new Map(),
+      transports: new Map()
+    });
   };
 
   return (
@@ -545,23 +1312,23 @@ const DataEntryForm: React.FC = () => {
             <Form onSubmit={handleJobSubmit} className="mt-3">
               <Form.Group className="mb-3">
                 <Form.Label>Client *</Form.Label>
-                <Select
-                  options={clientOptions}
-                  value={clientOptions.find(opt => opt.value === jobForm.clientId)}
-                  onChange={(selected) => setJobForm({...jobForm, clientId: selected?.value || 0})}
-                  filterOption={filterOption}
+                <AsyncSelect
+                  key={`clients-${dropdownRefreshKey.clients}`} // Force re-render when data changes
+                  cacheOptions
+                  defaultOptions
+                  loadOptions={loadClientOptions}
+                  value={dropdownValues.clients.get(jobForm.clientId) || null}
+                  onChange={(selected) => handleDropdownChange(selected, setJobForm, 'clientId', 'clients')}
                   isSearchable
                   isClearable
-                  placeholder="Select a client..."
-                  isDisabled={isSubmitting || !isAuthenticated || clients.length === 0}
+                  placeholder="Search or select a client..."
+                  isDisabled={isSubmitting || !isAuthenticated}
                   styles={customSelectStyles}
-                  noOptionsMessage={() => "No clients found"}
+                  noOptionsMessage={({ inputValue }) => 
+                    inputValue ? `No clients found for "${inputValue}"` : "Start typing to search clients"
+                  }
+                  loadingMessage={() => "Loading clients..."}
                 />
-                {clients.length === 0 && (
-                  <Form.Text className="text-warning">
-                    No clients available. Please add a client first.
-                  </Form.Text>
-                )}
               </Form.Group>
               
               <Row>
@@ -608,7 +1375,7 @@ const DataEntryForm: React.FC = () => {
               <Button
                 variant="primary"
                 type="submit"
-                disabled={isSubmitting || !isAuthenticated || clients.length === 0}
+                disabled={isSubmitting || !isAuthenticated}
               >
                 {isSubmitting ? 'Adding Job...' : 'Add Job'}
               </Button>
@@ -769,67 +1536,67 @@ const DataEntryForm: React.FC = () => {
                 <Col md={4}>
                   <Form.Group className="mb-3">
                     <Form.Label>Job *</Form.Label>
-                    <Select
-                      options={jobOptions}
-                      value={jobOptions.find(opt => opt.value === transportForm.jobId)}
-                      onChange={(selected) => setTransportForm({...transportForm, jobId: selected?.value || 0})}
-                      filterOption={filterOption}
+                    <AsyncSelect
+                      key={`jobs-${dropdownRefreshKey.jobs}`} // Force re-render when data changes
+                      cacheOptions
+                      defaultOptions
+                      loadOptions={loadJobOptions}
+                      value={dropdownValues.jobs.get(transportForm.jobId) || null}
+                      onChange={(selected) => handleDropdownChange(selected, setTransportForm, 'jobId', 'jobs')}
                       isSearchable
                       isClearable
-                      placeholder="Select a job..."
-                      isDisabled={isSubmitting || !isAuthenticated || jobs.length === 0}
+                      placeholder="Search or select a job..."
+                      isDisabled={isSubmitting || !isAuthenticated}
                       styles={customSelectStyles}
-                      noOptionsMessage={() => "No jobs found"}
+                      noOptionsMessage={({ inputValue }) => 
+                        inputValue ? `No jobs found for "${inputValue}"` : "Start typing to search jobs"
+                      }
+                      loadingMessage={() => "Loading jobs..."}
                     />
-                    {jobs.length === 0 && (
-                      <Form.Text className="text-warning">
-                        No jobs available. Please add a job first.
-                      </Form.Text>
-                    )}
                   </Form.Group>
                 </Col>
                 <Col md={4}>
                   <Form.Group className="mb-3">
                     <Form.Label>Vehicle *</Form.Label>
-                    <Select
-                      options={vehicleOptions}
-                      value={vehicleOptions.find(opt => opt.value === transportForm.vehicleId)}
-                      onChange={(selected) => setTransportForm({...transportForm, vehicleId: selected?.value || 0})}
-                      filterOption={filterOption}
+                    <AsyncSelect
+                      key={`vehicles-${dropdownRefreshKey.vehicles}`} // Force re-render when data changes
+                      cacheOptions
+                      defaultOptions
+                      loadOptions={loadVehicleOptions}
+                      value={dropdownValues.vehicles.get(transportForm.vehicleId) || null}
+                      onChange={(selected) => handleDropdownChange(selected, setTransportForm, 'vehicleId', 'vehicles')}
                       isSearchable
                       isClearable
-                      placeholder="Select a vehicle..."
-                      isDisabled={isSubmitting || !isAuthenticated || vehicles.length === 0}
+                      placeholder="Search or select a vehicle..."
+                      isDisabled={isSubmitting || !isAuthenticated}
                       styles={customSelectStyles}
-                      noOptionsMessage={() => "No vehicles found"}
+                      noOptionsMessage={({ inputValue }) => 
+                        inputValue ? `No vehicles found for "${inputValue}"` : "Start typing to search vehicles"
+                      }
+                      loadingMessage={() => "Loading vehicles..."}
                     />
-                    {vehicles.length === 0 && (
-                      <Form.Text className="text-warning">
-                        No vehicles available. Please add a vehicle first.
-                      </Form.Text>
-                    )}
                   </Form.Group>
                 </Col>
                 <Col md={4}>
                   <Form.Group className="mb-3">
                     <Form.Label>Driver *</Form.Label>
-                    <Select
-                      options={driverOptions}
-                      value={driverOptions.find(opt => opt.value === transportForm.driverId)}
-                      onChange={(selected) => setTransportForm({...transportForm, driverId: selected?.value || 0})}
-                      filterOption={filterOption}
+                    <AsyncSelect
+                      key={`drivers-${dropdownRefreshKey.drivers}`} // Force re-render when data changes
+                      cacheOptions
+                      defaultOptions
+                      loadOptions={loadDriverOptions}
+                      value={dropdownValues.drivers.get(transportForm.driverId) || null}
+                      onChange={(selected) => handleDropdownChange(selected, setTransportForm, 'driverId', 'drivers')}
                       isSearchable
                       isClearable
-                      placeholder="Select a driver..."
-                      isDisabled={isSubmitting || !isAuthenticated || drivers.length === 0}
+                      placeholder="Search or select a driver..."
+                      isDisabled={isSubmitting || !isAuthenticated}
                       styles={customSelectStyles}
-                      noOptionsMessage={() => "No drivers found"}
+                      noOptionsMessage={({ inputValue }) => 
+                        inputValue ? `No drivers found for "${inputValue}"` : "Start typing to search drivers"
+                      }
+                      loadingMessage={() => "Loading drivers..."}
                     />
-                    {drivers.length === 0 && (
-                      <Form.Text className="text-warning">
-                        No drivers available. Please add a driver first.
-                      </Form.Text>
-                    )}
                   </Form.Group>
                 </Col>
               </Row>
@@ -894,7 +1661,7 @@ const DataEntryForm: React.FC = () => {
               <Button
                 variant="primary"
                 type="submit"
-                disabled={isSubmitting || !isAuthenticated || jobs.length === 0 || vehicles.length === 0 || drivers.length === 0}
+                disabled={isSubmitting || !isAuthenticated}
               >
                 {isSubmitting ? 'Adding Transport...' : 'Add Transport'}
               </Button>
@@ -905,23 +1672,23 @@ const DataEntryForm: React.FC = () => {
             <Form onSubmit={handleRouteSubmit} className="mt-3">
               <Form.Group className="mb-3">
                 <Form.Label>Transport *</Form.Label>
-                <Select
-                  options={transportOptions}
-                  value={transportOptions.find(opt => opt.value === routeForm.transportId)}
-                  onChange={(selected) => setRouteForm({...routeForm, transportId: selected?.value || 0})}
-                  filterOption={filterOption}
+                <AsyncSelect
+                  key={`transports-${dropdownRefreshKey.transports}`} // Force re-render when data changes
+                  cacheOptions
+                  defaultOptions
+                  loadOptions={loadTransportOptions}
+                  value={dropdownValues.transports.get(routeForm.transportId) || null}
+                  onChange={(selected) => handleDropdownChange(selected, setRouteForm, 'transportId', 'transports')}
                   isSearchable
                   isClearable
-                  placeholder="Select a transport..."
-                  isDisabled={isSubmitting || !isAuthenticated || transports.length === 0}
+                  placeholder="Search or select a transport..."
+                  isDisabled={isSubmitting || !isAuthenticated}
                   styles={customSelectStyles}
-                  noOptionsMessage={() => "No transports found"}
+                  noOptionsMessage={({ inputValue }) => 
+                    inputValue ? `No transports found for "${inputValue}"` : "Start typing to search transports"
+                  }
+                  loadingMessage={() => "Loading transports..."}
                 />
-                {transports.length === 0 && (
-                  <Form.Text className="text-warning">
-                    No transports available. Please add a transport first.
-                  </Form.Text>
-                )}
               </Form.Group>
               
               <Row>
@@ -988,7 +1755,7 @@ const DataEntryForm: React.FC = () => {
               <Button
                 variant="primary"
                 type="submit"
-                disabled={isSubmitting || !isAuthenticated || transports.length === 0}
+                disabled={isSubmitting || !isAuthenticated}
               >
                 {isSubmitting ? 'Adding Route...' : 'Add Route'}
               </Button>

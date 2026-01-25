@@ -275,7 +275,7 @@ const DataTables: React.FC<DataTablesProps> = ({ activeTab, onTabChange, onDataC
   }
 
   return (
-    <div className="data-tables-container">
+    <div className="data-tables-container" style={{ display: 'flex', flexDirection: 'column', height: '100vh', maxHeight: '800px' }}>
       {/* Authentication Required Modal */}
       <Modal show={showAuthModal} onHide={() => setShowAuthModal(false)}>
         <Modal.Header closeButton>
@@ -321,7 +321,7 @@ const DataTables: React.FC<DataTablesProps> = ({ activeTab, onTabChange, onDataC
         </Toast>
       </ToastContainer>
       
-      <div className="d-flex justify-content-between align-items-center mb-3">
+      <div className="d-flex justify-content-between align-items-center mb-3" style={{ flexShrink: 0 }}>
         <Tabs activeKey={activeTab} onSelect={(k) => onTabChange(k || 'clients')} className="mb-0">
           <Tab eventKey="clients" title={`Clients (${clients.length})`} />
           <Tab eventKey="jobs" title={`Jobs (${jobs.length})`} />
@@ -339,298 +339,311 @@ const DataTables: React.FC<DataTablesProps> = ({ activeTab, onTabChange, onDataC
         </Button>
       </div>
 
-      {activeTab === 'clients' && (
-        <div className="table-responsive">
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>NIP</th>
-                <th>Address</th>
-                <th>Phone</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {clients.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="text-center text-muted">No clients found</td>
-                </tr>
-              ) : (
-                clients.map((client) => (
-                  <tr key={client.clientId}>
-                    <td>{client.clientId}</td>
-                    <td>{client.name}</td>
-                    <td>{client.nip}</td>
-                    <td>{client.address}</td>
-                    <td>{client.phone}</td>
-                    <td>
-                      <Button 
-                        variant="outline-danger" 
-                        size="sm" 
-                        onClick={() => handleDelete(
-                          client.clientId,
-                          'client',
-                          clientApi.delete,
-                          setClients
-                        )}
-                        disabled={deleting.client === client.clientId}
-                        title={isAuthenticated ? "Delete client" : "Login to delete"}
-                      >
-                        {deleting.client === client.clientId ? (
-                          <Spinner size="sm" />
-                        ) : (
-                          <>
-                            <i className="bi bi-trash"></i>
-                            {isAuthenticated ? ' Delete' : ' Login Required'}
-                          </>
-                        )}
-                      </Button>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </Table>
-        </div>
-      )}
+      {/* Scrollable table container */}
+      <div style={{ 
+        flex: '1 1 auto', 
+        overflowY: 'auto',
+        minHeight: '0' // Important for flex children to scroll properly
+      }}>
+        {error && (
+          <Alert variant="danger" className="mb-3">
+            {error}
+          </Alert>
+        )}
 
-      {activeTab === 'jobs' && (
-        <div className="table-responsive">
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Client ID</th>
-                <th>Date</th>
-                <th>Status</th>
-                <th>Remarks</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {jobs.length === 0 ? (
+        {activeTab === 'clients' && (
+          <div className="table-responsive">
+            <Table striped bordered hover>
+              <thead>
                 <tr>
-                  <td colSpan={6} className="text-center text-muted">No jobs found</td>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>NIP</th>
+                  <th>Address</th>
+                  <th>Phone</th>
+                  <th>Actions</th>
                 </tr>
-              ) : (
-                jobs.map((job) => (
-                  <tr key={job.jobId}>
-                    <td>{job.jobId}</td>
-                    <td>{job.clientId}</td>
-                    <td>{job.date}</td>
-                    <td>{getJobStatusBadge(job.status)}</td>
-                    <td>{job.remarks}</td>
-                    <td>
-                      <Button 
-                        variant="outline-danger" 
-                        size="sm" 
-                        onClick={() => handleDelete(
-                          job.jobId,
-                          'job',
-                          jobApi.delete,
-                          setJobs
-                        )}
-                        disabled={deleting.job === job.jobId}
-                        title={isAuthenticated ? "Delete job" : "Login to delete"}
-                      >
-                        {deleting.job === job.jobId ? (
-                          <Spinner size="sm" />
-                        ) : (
-                          <>
-                            <i className="bi bi-trash"></i>
-                            {isAuthenticated ? ' Delete' : ' Login Required'}
-                          </>
-                        )}
-                      </Button>
-                    </td>
+              </thead>
+              <tbody>
+                {clients.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="text-center text-muted">No clients found</td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </Table>
-        </div>
-      )}
+                ) : (
+                  clients.map((client) => (
+                    <tr key={client.clientId}>
+                      <td>{client.clientId}</td>
+                      <td>{client.name}</td>
+                      <td>{client.nip}</td>
+                      <td>{client.address}</td>
+                      <td>{client.phone}</td>
+                      <td>
+                        <Button 
+                          variant="outline-danger" 
+                          size="sm" 
+                          onClick={() => handleDelete(
+                            client.clientId,
+                            'client',
+                            clientApi.delete,
+                            setClients
+                          )}
+                          disabled={deleting.client === client.clientId}
+                          title={isAuthenticated ? "Delete client" : "Login to delete"}
+                        >
+                          {deleting.client === client.clientId ? (
+                            <Spinner size="sm" />
+                          ) : (
+                            <>
+                              <i className="bi bi-trash"></i>
+                              {isAuthenticated ? ' Delete' : ' Login Required'}
+                            </>
+                          )}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </Table>
+          </div>
+        )}
 
-      {activeTab === 'drivers' && (
-        <div className="table-responsive">
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Surname</th>
-                <th>License Number</th>
-                <th>Phone</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {drivers.length === 0 ? (
+        {activeTab === 'jobs' && (
+          <div className="table-responsive">
+            <Table striped bordered hover>
+              <thead>
                 <tr>
-                  <td colSpan={7} className="text-center text-muted">No drivers found</td>
+                  <th>ID</th>
+                  <th>Client ID</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Remarks</th>
+                  <th>Actions</th>
                 </tr>
-              ) : (
-                drivers.map((driver) => (
-                  <tr key={driver.driverId}>
-                    <td>{driver.driverId}</td>
-                    <td>{driver.name}</td>
-                    <td>{driver.surname}</td>
-                    <td>{driver.licenseNumber}</td>
-                    <td>{driver.phone}</td>
-                    <td>{getDriverStatusBadge(driver.status)}</td>
-                    <td>
-                      <Button 
-                        variant="outline-danger" 
-                        size="sm" 
-                        onClick={() => handleDelete(
-                          driver.driverId,
-                          'driver',
-                          driverApi.delete,
-                          setDrivers
-                        )}
-                        disabled={deleting.driver === driver.driverId}
-                        title={isAuthenticated ? "Delete driver" : "Login to delete"}
-                      >
-                        {deleting.driver === driver.driverId ? (
-                          <Spinner size="sm" />
-                        ) : (
-                          <>
-                            <i className="bi bi-trash"></i>
-                            {isAuthenticated ? ' Delete' : ' Login Required'}
-                          </>
-                        )}
-                      </Button>
-                    </td>
+              </thead>
+              <tbody>
+                {jobs.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="text-center text-muted">No jobs found</td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </Table>
-        </div>
-      )}
+                ) : (
+                  jobs.map((job) => (
+                    <tr key={job.jobId}>
+                      <td>{job.jobId}</td>
+                      <td>{job.clientId}</td>
+                      <td>{job.startDate}</td>
+                      <td>{getJobStatusBadge(job.status)}</td>
+                      <td>{job.remarks}</td>
+                      <td>
+                        <Button 
+                          variant="outline-danger" 
+                          size="sm" 
+                          onClick={() => handleDelete(
+                            job.jobId,
+                            'job',
+                            jobApi.delete,
+                            setJobs
+                          )}
+                          disabled={deleting.job === job.jobId}
+                          title={isAuthenticated ? "Delete job" : "Login to delete"}
+                        >
+                          {deleting.job === job.jobId ? (
+                            <Spinner size="sm" />
+                          ) : (
+                            <>
+                              <i className="bi bi-trash"></i>
+                              {isAuthenticated ? ' Delete' : ' Login Required'}
+                            </>
+                          )}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </Table>
+          </div>
+        )}
 
-      {activeTab === 'vehicles' && (
-        <div className="table-responsive">
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>License Plate</th>
-                <th>Type</th>
-                <th>Capacity</th>
-                <th>State</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {vehicles.length === 0 ? (
+        {activeTab === 'drivers' && (
+          <div className="table-responsive">
+            <Table striped bordered hover>
+              <thead>
                 <tr>
-                  <td colSpan={6} className="text-center text-muted">No vehicles found</td>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Surname</th>
+                  <th>License Number</th>
+                  <th>Phone</th>
+                  <th>Status</th>
+                  <th>Actions</th>
                 </tr>
-              ) : (
-                vehicles.map((vehicle) => (
-                  <tr key={vehicle.vehicleId}>
-                    <td>{vehicle.vehicleId}</td>
-                    <td>{vehicle.licensePlate}</td>
-                    <td>{getVehicleTypeLabel(vehicle.type)}</td>
-                    <td>{vehicle.capacity}</td>
-                    <td>{getVehicleStateBadge(vehicle.state)}</td>
-                    <td>
-                      <Button 
-                        variant="outline-danger" 
-                        size="sm" 
-                        onClick={() => handleDelete(
-                          vehicle.vehicleId,
-                          'vehicle',
-                          vehicleApi.delete,
-                          setVehicles
-                        )}
-                        disabled={deleting.vehicle === vehicle.vehicleId}
-                        title={isAuthenticated ? "Delete vehicle" : "Login to delete"}
-                      >
-                        {deleting.vehicle === vehicle.vehicleId ? (
-                          <Spinner size="sm" />
-                        ) : (
-                          <>
-                            <i className="bi bi-trash"></i>
-                            {isAuthenticated ? ' Delete' : ' Login Required'}
-                          </>
-                        )}
-                      </Button>
-                    </td>
+              </thead>
+              <tbody>
+                {drivers.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="text-center text-muted">No drivers found</td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </Table>
-        </div>
-      )}
+                ) : (
+                  drivers.map((driver) => (
+                    <tr key={driver.driverId}>
+                      <td>{driver.driverId}</td>
+                      <td>{driver.name}</td>
+                      <td>{driver.surname}</td>
+                      <td>{driver.licenseNumber}</td>
+                      <td>{driver.phone}</td>
+                      <td>{getDriverStatusBadge(driver.status)}</td>
+                      <td>
+                        <Button 
+                          variant="outline-danger" 
+                          size="sm" 
+                          onClick={() => handleDelete(
+                            driver.driverId,
+                            'driver',
+                            driverApi.delete,
+                            setDrivers
+                          )}
+                          disabled={deleting.driver === driver.driverId}
+                          title={isAuthenticated ? "Delete driver" : "Login to delete"}
+                        >
+                          {deleting.driver === driver.driverId ? (
+                            <Spinner size="sm" />
+                          ) : (
+                            <>
+                              <i className="bi bi-trash"></i>
+                              {isAuthenticated ? ' Delete' : ' Login Required'}
+                            </>
+                          )}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </Table>
+          </div>
+        )}
 
-      {activeTab === 'transports' && (
-        <div className="table-responsive">
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Job ID</th>
-                <th>Vehicle ID</th>
-                <th>Driver ID</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Cargo Mass</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {transports.length === 0 ? (
+        {activeTab === 'vehicles' && (
+          <div className="table-responsive">
+            <Table striped bordered hover>
+              <thead>
                 <tr>
-                  <td colSpan={9} className="text-center text-muted">No transports found</td>
+                  <th>ID</th>
+                  <th>License Plate</th>
+                  <th>Type</th>
+                  <th>Capacity</th>
+                  <th>State</th>
+                  <th>Actions</th>
                 </tr>
-              ) : (
-                transports.map((transport) => (
-                  <tr key={transport.transportId}>
-                    <td>{transport.transportId}</td>
-                    <td>{transport.jobId}</td>
-                    <td>{transport.vehicleId}</td>
-                    <td>{transport.driverId}</td>
-                    <td>{transport.startDate}</td>
-                    <td>{transport.endDate}</td>
-                    <td>{transport.cargoMass}</td>
-                    <td>{getTransportStatusBadge(transport.status)}</td>
-                    <td>
-                      <Button 
-                        variant="outline-danger" 
-                        size="sm" 
-                        onClick={() => handleDelete(
-                          transport.transportId,
-                          'transport',
-                          transportApi.delete,
-                          setTransports
-                        )}
-                        disabled={deleting.transport === transport.transportId}
-                        title={isAuthenticated ? "Delete transport" : "Login to delete"}
-                      >
-                        {deleting.transport === transport.transportId ? (
-                          <Spinner size="sm" />
-                        ) : (
-                          <>
-                            <i className="bi bi-trash"></i>
-                            {isAuthenticated ? ' Delete' : ' Login Required'}
-                          </>
-                        )}
-                      </Button>
-                    </td>
+              </thead>
+              <tbody>
+                {vehicles.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="text-center text-muted">No vehicles found</td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </Table>
-        </div>
-      )}
+                ) : (
+                  vehicles.map((vehicle) => (
+                    <tr key={vehicle.vehicleId}>
+                      <td>{vehicle.vehicleId}</td>
+                      <td>{vehicle.licensePlate}</td>
+                      <td>{getVehicleTypeLabel(vehicle.type)}</td>
+                      <td>{vehicle.capacity}</td>
+                      <td>{getVehicleStateBadge(vehicle.state)}</td>
+                      <td>
+                        <Button 
+                          variant="outline-danger" 
+                          size="sm" 
+                          onClick={() => handleDelete(
+                            vehicle.vehicleId,
+                            'vehicle',
+                            vehicleApi.delete,
+                            setVehicles
+                          )}
+                          disabled={deleting.vehicle === vehicle.vehicleId}
+                          title={isAuthenticated ? "Delete vehicle" : "Login to delete"}
+                        >
+                          {deleting.vehicle === vehicle.vehicleId ? (
+                            <Spinner size="sm" />
+                          ) : (
+                            <>
+                              <i className="bi bi-trash"></i>
+                              {isAuthenticated ? ' Delete' : ' Login Required'}
+                            </>
+                          )}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </Table>
+          </div>
+        )}
+
+        {activeTab === 'transports' && (
+          <div className="table-responsive">
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Job ID</th>
+                  <th>Vehicle ID</th>
+                  <th>Driver ID</th>
+                  <th>Start Date</th>
+                  <th>End Date</th>
+                  <th>Cargo Mass</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {transports.length === 0 ? (
+                  <tr>
+                    <td colSpan={9} className="text-center text-muted">No transports found</td>
+                  </tr>
+                ) : (
+                  transports.map((transport) => (
+                    <tr key={transport.transportId}>
+                      <td>{transport.transportId}</td>
+                      <td>{transport.jobId}</td>
+                      <td>{transport.vehicleId}</td>
+                      <td>{transport.driverId}</td>
+                      <td>{transport.startDate}</td>
+                      <td>{transport.endDate}</td>
+                      <td>{transport.cargoMass}</td>
+                      <td>{getTransportStatusBadge(transport.status)}</td>
+                      <td>
+                        <Button 
+                          variant="outline-danger" 
+                          size="sm" 
+                          onClick={() => handleDelete(
+                            transport.transportId,
+                            'transport',
+                            transportApi.delete,
+                            setTransports
+                          )}
+                          disabled={deleting.transport === transport.transportId}
+                          title={isAuthenticated ? "Delete transport" : "Login to delete"}
+                        >
+                          {deleting.transport === transport.transportId ? (
+                            <Spinner size="sm" />
+                          ) : (
+                            <>
+                              <i className="bi bi-trash"></i>
+                              {isAuthenticated ? ' Delete' : ' Login Required'}
+                            </>
+                          )}
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </Table>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
